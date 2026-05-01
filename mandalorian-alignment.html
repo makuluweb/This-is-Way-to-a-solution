@@ -13,7 +13,6 @@
     --mandalore-red: #8B1A1A;
     --mandalore-gold: #C8941A;
     --mandalore-gold-light: #E8B840;
-    --ember: #D4521A;
     --void: #080A09;
     --deep: #0E1210;
     --panel: #131815;
@@ -45,6 +44,199 @@
     z-index: 9999;
   }
 
+  /* ── KEY MODAL OVERLAY ── */
+  #key-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 6, 5, 0.92);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+  }
+  #key-overlay.visible { display: flex; }
+
+  .key-modal {
+    background: var(--panel);
+    border: 1px solid var(--mandalore-gold);
+    max-width: 480px;
+    width: 90%;
+    padding: 0;
+    position: relative;
+    box-shadow: 0 0 60px rgba(200,148,26,0.12), 0 0 120px rgba(200,148,26,0.05);
+  }
+
+  .key-modal::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border: 1px solid var(--mandalore-gold);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .key-modal-header {
+    background: linear-gradient(180deg, #0D1510 0%, var(--panel) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px 16px;
+    text-align: center;
+  }
+
+  .key-modal-helmet {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 14px;
+    filter: drop-shadow(0 0 8px rgba(200,148,26,0.4));
+  }
+
+  .key-modal-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--mandalore-gold);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .key-modal-subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+  }
+
+  .key-modal-body { padding: 20px 24px 24px; }
+
+  .key-field-label {
+    font-family: var(--font-display);
+    font-size: 8px;
+    letter-spacing: 0.3em;
+    color: var(--beskar-dark);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .key-field-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .key-input-wrap {
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  #api-key-input {
+    width: 100%;
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--beskar-dark);
+    color: var(--text-primary);
+    padding: 11px 44px 11px 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    outline: none;
+    letter-spacing: 0.05em;
+    transition: border-color 0.2s;
+  }
+  #api-key-input:focus {
+    border-color: var(--beskar);
+    border-left-color: var(--mandalore-gold);
+    background: var(--panel);
+  }
+  #api-key-input.error { border-color: #8B1A1A; border-left-color: #C43A2A; }
+
+  .key-toggle-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+  .key-toggle-btn:hover { color: var(--beskar-light); }
+
+  .key-hint {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .key-hint a { color: var(--mandalore-gold); text-decoration: none; }
+  .key-hint a:hover { text-decoration: underline; }
+
+  #key-error {
+    font-size: 10px;
+    color: #C43A2A;
+    margin-bottom: 12px;
+    font-family: var(--font-display);
+    letter-spacing: 0.1em;
+    display: none;
+  }
+  #key-error.visible { display: block; }
+
+  .key-submit-btn {
+    width: 100%;
+    background: rgba(200,148,26,0.08);
+    border: 1px solid var(--mandalore-gold);
+    color: var(--mandalore-gold);
+    padding: 11px;
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .key-submit-btn:hover { background: rgba(200,148,26,0.16); }
+  .key-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .key-storage-note {
+    margin-top: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    padding: 10px 12px;
+    background: rgba(140,154,142,0.04);
+    border: 1px solid var(--border);
+  }
+  .key-storage-note .lock-icon { color: var(--beskar-dark); flex-shrink: 0; margin-top: 1px; }
+
+  /* ── KEY STATUS BAR (in header) ── */
+  .key-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .key-status:hover { border-color: var(--beskar-dark); }
+  .key-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .key-dot.active { background: #9BC99B; box-shadow: 0 0 4px rgba(155,201,155,0.6); }
+  .key-status-text {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
   /* ── HEADER ── */
   .mando-header {
     background: linear-gradient(180deg, #0A0F0B 0%, var(--deep) 100%);
@@ -57,7 +249,6 @@
     top: 0;
     z-index: 100;
   }
-
   .mando-header::after {
     content: '';
     position: absolute;
@@ -68,7 +259,6 @@
   }
 
   .helmet-icon { width: 40px; height: 40px; flex-shrink: 0; }
-
   .header-title { flex: 1; padding: 0 16px; }
   .header-title .callsign {
     font-family: var(--font-display);
@@ -124,7 +314,7 @@
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.2s;
-    margin-left: 12px;
+    margin-left: 8px;
   }
   .export-btn:hover { background: rgba(200,148,26,0.1); }
 
@@ -137,7 +327,6 @@
     top: 70px;
     z-index: 99;
   }
-
   .phase-btn {
     flex: 1;
     padding: 10px 8px 8px;
@@ -179,7 +368,6 @@
   .phase-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--beskar-light); letter-spacing: 0.06em; }
   .phase-subtitle { font-size: 11px; color: var(--text-dim); margin-top: 4px; font-style: italic; letter-spacing: 0.05em; }
 
-  /* ── FIELDS ── */
   .field-label {
     font-family: var(--font-display);
     font-size: 8px;
@@ -213,7 +401,6 @@
     background: var(--panel-light);
   }
 
-  /* ── BUTTONS ── */
   .ai-btn {
     background: var(--panel);
     border: 1px solid var(--beskar-dark);
@@ -226,11 +413,10 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-  .ai-btn::before { content: '◈ '; color: var(--mandalore-gold); }
+  .ai-btn::before { content: '&#9672; '; color: var(--mandalore-gold); }
   .ai-btn:hover { border-color: var(--mandalore-gold); color: var(--mandalore-gold-light); background: rgba(200,148,26,0.06); }
   .ai-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* ── INTEL PANELS ── */
   .intel-panel {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -247,7 +433,6 @@
     color: var(--mandalore-gold);
     text-transform: uppercase;
   }
-  .intel-header::before { content: '▶ '; font-size: 6px; }
   .intel-body { padding: 12px 14px; font-size: 12px; line-height: 1.65; }
   .intel-row { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
   .intel-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
@@ -257,7 +442,6 @@
     padding: 8px 12px; background: rgba(140,154,142,0.05); border-left: 2px solid var(--beskar);
   }
 
-  /* ── CUES ── */
   .cue-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
   .cue-chip {
     background: var(--panel); border: 1px solid var(--border);
@@ -265,7 +449,6 @@
     font-size: 11px; font-style: italic; font-family: var(--font-mono);
   }
 
-  /* ── SESSION FLOW ── */
   .session-flow { background: var(--panel); border: 1px solid var(--border); margin-top: 20px; }
   .session-flow-header {
     background: rgba(140,154,142,0.05); padding: 7px 14px;
@@ -278,7 +461,6 @@
   .flow-phase { font-family: var(--font-display); font-size: 8px; letter-spacing: 0.2em; color: var(--mandalore-gold); width: 70px; padding-top: 1px; flex-shrink: 0; }
   .flow-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
 
-  /* ── ACTIONS ── */
   .action-row { display: grid; grid-template-columns: 1fr 140px 130px 32px; gap: 6px; margin-bottom: 6px; }
   .add-action-btn {
     background: transparent; border: 1px dashed var(--border); color: var(--text-dim);
@@ -293,7 +475,6 @@
   }
   .del-btn:hover { border-color: var(--mandalore-red); color: var(--mandalore-red); }
 
-  /* ── COMMIT ── */
   .commit-box {
     background: rgba(200,148,26,0.04); border: 1px solid var(--mandalore-gold);
     padding: 14px 16px; margin-top: 14px;
@@ -315,49 +496,96 @@
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="mando-header">
-  <svg class="helmet-icon" viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 2C11 2 4 10 4 20V30L8 38H12L14 42H26L28 38H32L36 30V20C36 10 29 2 20 2Z" fill="#4A5A4C" stroke="#8C9A8E" stroke-width="1"/>
-    <path d="M8 22L12 18H28L32 22V28L28 32H12L8 28V22Z" fill="#2A3A2C" stroke="#6A7A6C" stroke-width="0.5"/>
-    <path d="M12 20H28V22H12V20Z" fill="#C8941A" opacity="0.8"/>
-    <path d="M14 22H26V26H14V22Z" fill="#1A211C"/>
-    <path d="M14 22H20V26H14V22Z" fill="#0A140C"/>
-    <path d="M8 28L12 32V38H8L6 32L8 28Z" fill="#3A4A3C" stroke="#5A6A5C" stroke-width="0.5"/>
-    <path d="M32 28L28 32V38H32L34 32L32 28Z" fill="#3A4A3C" stroke="#5A6A5C" stroke-width="0.5"/>
-  </svg>
-  <div class="header-title">
-    <div class="callsign">MANDALORIAN TACTICAL FRAMEWORK</div>
-    <div class="mission">EXECUTIVE ALIGNMENT PROTOCOL</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div class="timer-panel">
-      <div class="timer-display" id="timer-display">00:00</div>
-      <div class="timer-label">30:00 MISSION WINDOW</div>
-      <div class="timer-controls">
-        <button class="btn-small" id="timer-start-btn" onclick="toggleTimer()">▶ START</button>
-        <button class="btn-small" onclick="resetTimer()">↺ RESET</button>
+<!-- ── API KEY MODAL ── -->
+<div id="key-overlay">
+  <div class="key-modal">
+    <div class="key-modal-header">
+      <svg class="key-modal-helmet" viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 2C11 2 4 10 4 20V30L8 38H12L14 42H26L28 38H32L36 30V20C36 10 29 2 20 2Z" fill="#4A5A4C" stroke="#C8941A" stroke-width="1"/>
+        <path d="M8 22L12 18H28L32 22V28L28 32H12L8 28V22Z" fill="#2A3A2C" stroke="#6A7A6C" stroke-width="0.5"/>
+        <path d="M12 20H28V22H12V20Z" fill="#C8941A" opacity="0.9"/>
+        <path d="M14 22H26V26H14V22Z" fill="#1A211C"/>
+        <path d="M14 22H20V26H14V22Z" fill="#0A140C"/>
+        <path d="M8 28L12 32V38H8L6 32L8 28Z" fill="#3A4A3C" stroke="#5A6A5C" stroke-width="0.5"/>
+        <path d="M32 28L28 32V38H32L34 32L32 28Z" fill="#3A4A3C" stroke="#5A6A5C" stroke-width="0.5"/>
+      </svg>
+      <div class="key-modal-title">Authentication Required</div>
+      <div class="key-modal-subtitle">Enter your Anthropic API key to access<br>the tactical intelligence system</div>
+    </div>
+    <div class="key-modal-body">
+      <div class="key-field-label">Anthropic API Key</div>
+      <div class="key-input-wrap">
+        <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false" />
+        <button class="key-toggle-btn" id="key-toggle" onclick="toggleKeyVisibility()" title="Show/hide key">&#128065;</button>
+      </div>
+      <div class="key-hint">
+        Get your key at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>. Your key starts with <code style="color:var(--beskar-light);font-size:10px;">sk-ant-</code>
+      </div>
+      <div id="key-error">&#9888; Invalid key format. Must start with sk-ant-</div>
+      <button class="key-submit-btn" id="key-submit" onclick="submitApiKey()">&#9654; AUTHENTICATE &amp; DEPLOY</button>
+      <div class="key-storage-note">
+        <span class="lock-icon">&#128274;</span>
+        <span>Your key is stored only in this browser's local storage — never sent anywhere except directly to Anthropic's API. Clear browser data to remove it.</span>
       </div>
     </div>
-    <button class="export-btn" onclick="exportSession()">↓ DEBRIEF</button>
   </div>
 </div>
 
-<!-- PHASE NAV -->
-<div class="phase-nav">
-  <button class="phase-btn active" data-phase="problem" onclick="setPhase('problem')"><span class="glyph">⬡</span>DEFINE</button>
-  <button class="phase-btn" data-phase="align" onclick="setPhase('align')"><span class="glyph">◈</span>ALIGN</button>
-  <button class="phase-btn" data-phase="explore" onclick="setPhase('explore')"><span class="glyph">◇</span>EXPLORE</button>
-  <button class="phase-btn" data-phase="challenge" onclick="setPhase('challenge')"><span class="glyph">◆</span>CHALLENGE</button>
-  <button class="phase-btn" data-phase="commit" onclick="setPhase('commit')"><span class="glyph">●</span>COMMIT</button>
-</div>
+<!-- ── MAIN APP ── -->
+<div id="app" style="display:none;">
 
-<!-- CONTENT -->
-<div class="phase-content" id="phase-content"></div>
+  <!-- HEADER -->
+  <div class="mando-header">
+    <svg class="helmet-icon" viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 2C11 2 4 10 4 20V30L8 38H12L14 42H26L28 38H32L36 30V20C36 10 29 2 20 2Z" fill="#4A5A4C" stroke="#8C9A8E" stroke-width="1"/>
+      <path d="M8 22L12 18H28L32 22V28L28 32H12L8 28V22Z" fill="#2A3A2C" stroke="#6A7A6C" stroke-width="0.5"/>
+      <path d="M12 20H28V22H12V20Z" fill="#C8941A" opacity="0.8"/>
+      <path d="M14 22H26V26H14V22Z" fill="#1A211C"/>
+      <path d="M14 22H20V26H14V22Z" fill="#0A140C"/>
+      <path d="M8 28L12 32V38H8L6 32L8 28Z" fill="#3A4A3C" stroke="#5A6A5C" stroke-width="0.5"/>
+      <path d="M32 28L28 32V38H32L34 32L32 28Z" fill="#3A4A3C" stroke="#5A6A5C" stroke-width="0.5"/>
+    </svg>
+    <div class="header-title">
+      <div class="callsign">Mandalorian Tactical Framework</div>
+      <div class="mission">Executive Alignment Protocol</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="key-status" onclick="showKeyModal(true)" title="Click to change API key">
+        <div class="key-dot active" id="key-dot"></div>
+        <div class="key-status-text" id="key-status-text">Key Active</div>
+      </div>
+      <div class="timer-panel">
+        <div class="timer-display" id="timer-display">00:00</div>
+        <div class="timer-label">30:00 Mission Window</div>
+        <div class="timer-controls">
+          <button class="btn-small" id="timer-start-btn" onclick="toggleTimer()">&#9654; Start</button>
+          <button class="btn-small" onclick="resetTimer()">&#8635; Reset</button>
+        </div>
+      </div>
+      <button class="export-btn" onclick="exportSession()">&#8595; Debrief</button>
+    </div>
+  </div>
+
+  <!-- PHASE NAV -->
+  <div class="phase-nav">
+    <button class="phase-btn active" data-phase="problem" onclick="setPhase('problem')"><span class="glyph">&#11041;</span>Define</button>
+    <button class="phase-btn" data-phase="align"   onclick="setPhase('align')"  ><span class="glyph">&#9672;</span>Align</button>
+    <button class="phase-btn" data-phase="explore" onclick="setPhase('explore')"><span class="glyph">&#9671;</span>Explore</button>
+    <button class="phase-btn" data-phase="challenge" onclick="setPhase('challenge')"><span class="glyph">&#9670;</span>Challenge</button>
+    <button class="phase-btn" data-phase="commit"  onclick="setPhase('commit')" ><span class="glyph">&#9679;</span>Commit</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="phase-content" id="phase-content"></div>
+
+</div><!-- /#app -->
 
 <script>
-// ── CONFIG ── Replace with your API key from console.anthropic.com
-const API_KEY = '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';
+// ── STORAGE KEY ──
+const STORAGE_KEY = 'mando_api_key';
+
+// ── STATE ──
+let API_KEY = '';
 
 const SYSTEM_PROMPT = `You are an executive facilitation specialist trained in consultative dialogue and the Never Split the Difference framework. Support a 30-minute structured executive conversation through ALIGN → EXPLORE → CHALLENGE → COMMIT phases.
 
@@ -370,11 +598,11 @@ Rules:
 - Respond ONLY with valid JSON: { "insight": "...", "suggestion": "...", "nextQuestion": "..." }`;
 
 const PHASES = [
-  { id: 'problem',   glyph: '⬡', title: 'DEFINE MISSION PARAMETERS',   subtitle: 'Frame the problem before the conversation begins' },
-  { id: 'align',     glyph: '◈', title: 'ALIGN',     subtitle: 'Build shared understanding — what do we all agree is true?' },
-  { id: 'explore',   glyph: '◇', title: 'EXPLORE',   subtitle: 'Open the space — what have we not yet considered?' },
-  { id: 'challenge', glyph: '◆', title: 'CHALLENGE', subtitle: 'Test the thinking — what are we assuming that may not be true?' },
-  { id: 'commit',    glyph: '●', title: 'COMMIT',    subtitle: 'Crystallise the decision — what are we agreeing to?' },
+  { id: 'problem',   glyph: '&#11041;', title: 'Define Mission Parameters',   subtitle: 'Frame the problem before the conversation begins' },
+  { id: 'align',     glyph: '&#9672;',  title: 'Align',     subtitle: 'Build shared understanding — what do we all agree is true?' },
+  { id: 'explore',   glyph: '&#9671;',  title: 'Explore',   subtitle: 'Open the space — what have we not yet considered?' },
+  { id: 'challenge', glyph: '&#9670;',  title: 'Challenge', subtitle: 'Test the thinking — what are we assuming that may not be true?' },
+  { id: 'commit',    glyph: '&#9679;',  title: 'Commit',    subtitle: 'Crystallise the decision — what are we agreeing to?' },
 ];
 
 const CUES = {
@@ -383,7 +611,7 @@ const CUES = {
   challenge: ['"What would have to be true for this to fail?"', '"What\'s the argument against your own position?"', '"If you\'re wrong, what does that cost?"'],
 };
 
-const state = {
+const appState = {
   phase: 'problem',
   problemStatement: '',
   openingQuestion: '',
@@ -397,12 +625,93 @@ const state = {
   loading: {},
 };
 
+// ── KEY MODAL ──
+function showKeyModal(isChange) {
+  const overlay = document.getElementById('key-overlay');
+  overlay.classList.add('visible');
+  const input = document.getElementById('api-key-input');
+  input.value = '';
+  input.type = 'password';
+  input.classList.remove('error');
+  document.getElementById('key-error').classList.remove('visible');
+  if (isChange) {
+    // Pre-fill masked existing key for reference
+    const stored = localStorage.getItem(STORAGE_KEY) || '';
+    if (stored) input.placeholder = stored.slice(0,10) + '••••••••••••• (enter new key or leave to keep)';
+  }
+  setTimeout(() => input.focus(), 100);
+}
+
+function hideKeyModal() {
+  document.getElementById('key-overlay').classList.remove('visible');
+}
+
+function toggleKeyVisibility() {
+  const input = document.getElementById('api-key-input');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function submitApiKey() {
+  const input = document.getElementById('api-key-input');
+  const val = input.value.trim();
+  const errEl = document.getElementById('key-error');
+
+  // Allow submitting empty if there's already a stored key (to keep existing)
+  if (!val) {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      API_KEY = stored;
+      hideKeyModal();
+      return;
+    }
+    input.classList.add('error');
+    errEl.textContent = '⚠ No key entered and no stored key found.';
+    errEl.classList.add('visible');
+    return;
+  }
+
+  if (!val.startsWith('sk-ant-')) {
+    input.classList.add('error');
+    errEl.textContent = '⚠ Invalid key format. Must start with sk-ant-';
+    errEl.classList.add('visible');
+    return;
+  }
+
+  API_KEY = val;
+  localStorage.setItem(STORAGE_KEY, val);
+  updateKeyStatus(true);
+  hideKeyModal();
+  document.getElementById('app').style.display = 'block';
+  renderContent();
+}
+
+function updateKeyStatus(active) {
+  document.getElementById('key-dot').className = 'key-dot' + (active ? ' active' : '');
+  document.getElementById('key-status-text').textContent = active ? 'Key Active' : 'No Key';
+}
+
+// Allow Enter key in the input
+document.getElementById('api-key-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitApiKey();
+});
+
+// ── INIT: Check for stored key ──
+function init() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored && stored.startsWith('sk-ant-')) {
+    API_KEY = stored;
+    updateKeyStatus(true);
+    hideKeyModal();
+    document.getElementById('app').style.display = 'block';
+    renderContent();
+  } else {
+    showKeyModal(false);
+  }
+}
+
 // ── API ──
 async function callAI(prompt) {
-  if (API_KEY === 'YOUR_API_KEY_HERE') {
-    alert('Please set your API key in the HTML file. Open the file in a text editor and replace YOUR_API_KEY_HERE with your key from console.anthropic.com');
-    return null;
-  }
+  if (!API_KEY) { showKeyModal(false); return null; }
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -418,11 +727,25 @@ async function callAI(prompt) {
       messages: [{ role: 'user', content: prompt }],
     }),
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    alert(`API Error ${res.status}: ${err.error?.message || res.statusText}`);
+
+  if (res.status === 401) {
+    // Bad key — clear it and re-prompt
+    localStorage.removeItem(STORAGE_KEY);
+    API_KEY = '';
+    updateKeyStatus(false);
+    const errEl = document.getElementById('key-error');
+    errEl.textContent = '⚠ Authentication failed. This key has been rejected by Anthropic. Please enter a valid key.';
+    errEl.classList.add('visible');
+    showKeyModal(false);
     return null;
   }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    alert('API Error ' + res.status + ': ' + (err.error?.message || res.statusText));
+    return null;
+  }
+
   const data = await res.json();
   const text = (data.content || []).map(i => i.text || '').join('');
   const clean = text.replace(/```json|```/g, '').trim();
@@ -430,89 +753,96 @@ async function callAI(prompt) {
   catch { return { insight: text, suggestion: '', nextQuestion: '' }; }
 }
 
-// ── PHASE RENDER ──
+// ── RENDER ──
 function setPhase(p) {
-  state.phase = p;
+  appState.phase = p;
   document.querySelectorAll('.phase-btn').forEach(b => b.classList.toggle('active', b.dataset.phase === p));
   renderContent();
 }
 
 function renderContent() {
   const el = document.getElementById('phase-content');
-  const ph = PHASES.find(p => p.id === state.phase);
+  if (!el) return;
+  const ph = PHASES.find(p => p.id === appState.phase);
 
-  if (state.phase === 'problem') {
+  if (appState.phase === 'problem') {
     el.innerHTML = `
       <div class="phase-header">
         <div class="phase-icon-large">${ph.glyph}</div>
         <div><div class="phase-title">${ph.title}</div><div class="phase-subtitle">${ph.subtitle}</div></div>
       </div>
       <div class="mb-20">
-        <div class="field-label">MISSION BRIEF — PROBLEM STATEMENT</div>
+        <div class="field-label">Mission Brief — Problem Statement</div>
         <textarea rows="4" id="problem-input" placeholder="Describe the core problem, tension, or decision that must be resolved. Be specific. What is at stake? Who is affected?"></textarea>
         <div style="font-size:10px;color:var(--text-dim);margin-top:6px;font-family:var(--font-mono);">// Specificity is your beskar. Vague problems yield vague outcomes.</div>
       </div>
-      <button class="ai-btn" id="opener-btn" onclick="generateOpener()" ${!state.problemStatement.trim() ? 'disabled' : ''}>GENERATE OPENING STRIKE</button>
-      ${state.openingQuestion ? `
+      <button class="ai-btn" id="opener-btn" onclick="generateOpener()">Generate Opening Strike</button>
+      ${appState.openingQuestion ? `
         <div class="intel-panel" style="margin-top:14px;">
-          <div class="intel-header">OPENING GAMBIT — CALIBRATED QUESTION</div>
+          <div class="intel-header">&#9654; Opening Gambit — Calibrated Question</div>
           <div class="intel-body">
-            <div class="question-highlight">"${escHtml(state.openingQuestion)}"</div>
+            <div class="question-highlight">"${escHtml(appState.openingQuestion)}"</div>
             <div style="font-size:10px;color:var(--text-dim);margin-top:10px;font-family:var(--font-display);letter-spacing:0.1em;">// ASK THIS. THEN WAIT. LET SILENCE DO THE WORK.</div>
           </div>
         </div>` : ''}
       <div class="session-flow">
-        <div class="session-flow-header">◈ MISSION PROTOCOL — 30 MINUTE WINDOW</div>
-        ${[['ALIGN','Establish shared understanding of the problem and its stakes'],['EXPLORE','Surface possibilities, perspectives, and underlying interests'],['CHALLENGE','Test assumptions and stress-test options with tactical empathy'],['COMMIT','Synthesise to a clear decision, commitment statement, and next actions']].map(([k,v]) => `
-          <div class="flow-row"><div class="flow-phase">${k}</div><div class="flow-desc">${v}</div></div>`).join('')}
+        <div class="session-flow-header">&#9672; Mission Protocol — 30 Minute Window</div>
+        ${[['ALIGN','Establish shared understanding of the problem and its stakes'],
+           ['EXPLORE','Surface possibilities, perspectives, and underlying interests'],
+           ['CHALLENGE','Test assumptions and stress-test options with tactical empathy'],
+           ['COMMIT','Synthesise to a clear decision, commitment statement, and next actions']
+          ].map(([k,v]) => `<div class="flow-row"><div class="flow-phase">${k}</div><div class="flow-desc">${v}</div></div>`).join('')}
       </div>`;
-    const probTA = document.getElementById('problem-input');
-    probTA.value = state.problemStatement;
-    probTA.addEventListener('input', e => {
-      state.problemStatement = e.target.value;
-      document.getElementById('opener-btn').disabled = !e.target.value.trim();
+    const ta = document.getElementById('problem-input');
+    ta.value = appState.problemStatement;
+    ta.addEventListener('input', e => {
+      appState.problemStatement = e.target.value;
+      const btn = document.getElementById('opener-btn');
+      if (btn) btn.disabled = !e.target.value.trim();
     });
+    document.getElementById('opener-btn').disabled = !appState.problemStatement.trim();
     return;
   }
 
-  if (state.phase === 'commit') {
-    const ai = state.aiResponses.commit;
-    const loadingCommitIntel = state.loading['commit-intel'];
-    const loadingCommitStmt  = state.loading['commit-stmt'];
+  if (appState.phase === 'commit') {
+    const ai = appState.aiResponses.commit;
+    const loadIntel = appState.loading['commit-intel'];
+    const loadStmt  = appState.loading['commit-stmt'];
     el.innerHTML = `
       <div class="phase-header">
         <div class="phase-icon-large">${ph.glyph}</div>
         <div><div class="phase-title">${ph.title}</div><div class="phase-subtitle">${ph.subtitle}</div></div>
       </div>
       <div class="mb-20">
-        <div class="field-label">MISSION DEBRIEF NOTES</div>
+        <div class="field-label">Mission Debrief Notes</div>
         <textarea rows="3" id="commit-notes" placeholder="What is being agreed? What has shifted? What does everyone now understand?"></textarea>
       </div>
       <div class="flex-gap mb-14">
-        <button class="ai-btn" id="commit-ai-btn" onclick="getAI('commit')" ${loadingCommitIntel ? 'disabled' : ''}>${loadingCommitIntel ? '<span class="loading-pulse">SCANNING...</span>' : 'INTEL INSIGHT'}</button>
-        <button class="ai-btn" id="commit-stmt-btn" onclick="generateCommitment()" ${loadingCommitStmt ? 'disabled' : ''}>${loadingCommitStmt ? '<span class="loading-pulse">DRAFTING...</span>' : 'DRAFT COMMITMENT'}</button>
+        <button class="ai-btn" id="commit-ai-btn" onclick="getAI('commit')" ${loadIntel ? 'disabled' : ''}>${loadIntel ? '<span class="loading-pulse">Scanning...</span>' : 'Intel Insight'}</button>
+        <button class="ai-btn" id="commit-stmt-btn" onclick="generateCommitment()" ${loadStmt ? 'disabled' : ''}>${loadStmt ? '<span class="loading-pulse">Drafting...</span>' : 'Draft Commitment'}</button>
       </div>
-      ${ai ? renderIntelPanel(ai, 'TACTICAL ANALYSIS') : ''}
-      ${state.commitmentStatement ? `
+      ${ai ? renderIntelPanel(ai, 'Tactical Analysis') : ''}
+      ${appState.commitmentStatement ? `
         <div class="intel-panel" style="border-left-color:var(--mandalore-gold);">
-          <div class="intel-header">&#9673; COMMITMENT STATEMENT &#8212; LOCKED</div>
-          <div class="intel-body"><div class="commit-box">"${escHtml(state.commitmentStatement)}"</div></div>
+          <div class="intel-header">&#9711; Commitment Statement — Locked</div>
+          <div class="intel-body"><div class="commit-box">"${escHtml(appState.commitmentStatement)}"</div></div>
         </div>` : ''}
       <div class="mt-16">
-        <div class="field-label">ACTION ORDERS</div>
+        <div class="field-label">Action Orders</div>
         <div id="actions-list"></div>
-        <button class="add-action-btn" onclick="addAction()">+ ASSIGN ORDER</button>
+        <button class="add-action-btn" onclick="addAction()">+ Assign Order</button>
       </div>`;
-    const commitTA = document.getElementById('commit-notes');
-    commitTA.value = state.notes.commit;
-    commitTA.addEventListener('input', e => { state.notes.commit = e.target.value; });
+    const ta = document.getElementById('commit-notes');
+    ta.value = appState.notes.commit;
+    ta.addEventListener('input', e => { appState.notes.commit = e.target.value; });
     renderActions();
     return;
   }
 
-  const cues = CUES[state.phase] || [];
-  const ai = state.aiResponses[state.phase];
-  const loading = state.loading[state.phase];
+  // ALIGN / EXPLORE / CHALLENGE
+  const cues = CUES[appState.phase] || [];
+  const ai = appState.aiResponses[appState.phase];
+  const loading = appState.loading[appState.phase];
   el.innerHTML = `
     <div class="phase-header">
       <div class="phase-icon-large">${ph.glyph}</div>
@@ -520,36 +850,35 @@ function renderContent() {
     </div>
     ${cues.length ? `
       <div class="mb-14">
-        <div class="field-label">TACTICAL CUES</div>
+        <div class="field-label">Tactical Cues</div>
         <div class="cue-grid">${cues.map(c => `<div class="cue-chip">${escHtml(c)}</div>`).join('')}</div>
       </div>` : ''}
     <div class="mb-20">
-      <div class="field-label">FIELD NOTES</div>
+      <div class="field-label">Field Notes</div>
       <textarea rows="4" id="phase-notes" placeholder="Capture what's said, what's felt, what matters most..."></textarea>
     </div>
-    <button class="ai-btn" id="ai-btn" onclick="getAI('${state.phase}')" ${loading ? 'disabled' : ''}>${loading ? '<span class="loading-pulse">SCANNING INTEL...</span>' : 'GET INTEL ANALYSIS'}</button>
-    ${ai ? renderIntelPanel(ai, 'TACTICAL ANALYSIS &#8212; ' + state.phase.toUpperCase()) : ''}`;
+    <button class="ai-btn" id="ai-btn" onclick="getAI('${appState.phase}')" ${loading ? 'disabled' : ''}>${loading ? '<span class="loading-pulse">Scanning Intel...</span>' : 'Get Intel Analysis'}</button>
+    ${ai ? renderIntelPanel(ai, 'Tactical Analysis &mdash; ' + appState.phase.toUpperCase()) : ''}`;
 
-  const notesTA = document.getElementById('phase-notes');
-  notesTA.value = state.notes[state.phase];
-  notesTA.addEventListener('input', e => {
-    state.notes[state.phase] = e.target.value;
+  const ta = document.getElementById('phase-notes');
+  ta.value = appState.notes[appState.phase];
+  ta.addEventListener('input', e => {
+    appState.notes[appState.phase] = e.target.value;
     const btn = document.getElementById('ai-btn');
-    if (btn) btn.disabled = !e.target.value.trim() || !!state.loading[state.phase];
+    if (btn) btn.disabled = !e.target.value.trim() || !!appState.loading[appState.phase];
   });
-  // Set initial button disabled state correctly
   const aiBtn = document.getElementById('ai-btn');
-  if (aiBtn) aiBtn.disabled = !state.notes[state.phase].trim() || !!loading;
+  if (aiBtn) aiBtn.disabled = !appState.notes[appState.phase].trim() || !!loading;
 }
 
 function renderIntelPanel(ai, label) {
   return `
     <div class="intel-panel">
-      <div class="intel-header">${label}</div>
+      <div class="intel-header">&#9654; ${label}</div>
       <div class="intel-body">
-        ${ai.insight ? `<div class="intel-row"><div class="intel-row-label">SIGNAL DETECTED</div><div>${escHtml(ai.insight)}</div></div>` : ''}
-        ${ai.suggestion ? `<div class="intel-row"><div class="intel-row-label">RECOMMENDED MOVE</div><div>${escHtml(ai.suggestion)}</div></div>` : ''}
-        ${ai.nextQuestion ? `<div class="intel-row"><div class="intel-row-label">NEXT STRIKE</div><div class="question-highlight">"${escHtml(ai.nextQuestion)}"</div></div>` : ''}
+        ${ai.insight    ? `<div class="intel-row"><div class="intel-row-label">Signal Detected</div><div>${escHtml(ai.insight)}</div></div>` : ''}
+        ${ai.suggestion ? `<div class="intel-row"><div class="intel-row-label">Recommended Move</div><div>${escHtml(ai.suggestion)}</div></div>` : ''}
+        ${ai.nextQuestion ? `<div class="intel-row"><div class="intel-row-label">Next Strike</div><div class="question-highlight">"${escHtml(ai.nextQuestion)}"</div></div>` : ''}
       </div>
     </div>`;
 }
@@ -557,82 +886,81 @@ function renderIntelPanel(ai, label) {
 function renderActions() {
   const el = document.getElementById('actions-list');
   if (!el) return;
-  el.innerHTML = state.actions.map((a, i) => `
+  el.innerHTML = appState.actions.map((a, i) => `
     <div class="action-row">
       <input type="text" id="act-what-${i}" placeholder="Order..." />
-      <input type="text" id="act-who-${i}" placeholder="Assigned to" />
-      <input type="text" id="act-by-${i}" placeholder="By when" />
+      <input type="text" id="act-who-${i}"  placeholder="Assigned to" />
+      <input type="text" id="act-by-${i}"   placeholder="By when" />
       <button class="del-btn" onclick="removeAction(${i})">&#215;</button>
     </div>`).join('');
-  // Set values via JS to avoid HTML escaping issues
-  state.actions.forEach((a, i) => {
-    const wEl = document.getElementById(`act-what-${i}`);
-    const pEl = document.getElementById(`act-who-${i}`);
-    const bEl = document.getElementById(`act-by-${i}`);
-    if (wEl) { wEl.value = a.what; wEl.addEventListener('input', e => { state.actions[i].what = e.target.value; }); }
-    if (pEl) { pEl.value = a.who;  pEl.addEventListener('input', e => { state.actions[i].who  = e.target.value; }); }
-    if (bEl) { bEl.value = a.by;   bEl.addEventListener('input', e => { state.actions[i].by   = e.target.value; }); }
+  appState.actions.forEach((a, i) => {
+    const w = document.getElementById(`act-what-${i}`);
+    const p = document.getElementById(`act-who-${i}`);
+    const b = document.getElementById(`act-by-${i}`);
+    if (w) { w.value = a.what; w.addEventListener('input', e => { appState.actions[i].what = e.target.value; }); }
+    if (p) { p.value = a.who;  p.addEventListener('input', e => { appState.actions[i].who  = e.target.value; }); }
+    if (b) { b.value = a.by;   b.addEventListener('input', e => { appState.actions[i].by   = e.target.value; }); }
   });
 }
 
-function addAction() { state.actions.push({ what: '', who: '', by: '' }); renderActions(); }
-function removeAction(i) { state.actions.splice(i, 1); renderActions(); }
+function addAction()      { appState.actions.push({ what: '', who: '', by: '' }); renderActions(); }
+function removeAction(i)  { appState.actions.splice(i, 1); renderActions(); }
 
 // ── AI CALLS ──
 const PROMPTS = {
-  align:     () => `Problem: "${state.problemStatement}"\nALIGN notes: "${state.notes.align}"\n\nGenerate: insight about alignment, facilitation suggestion, best next open question. JSON: {insight, suggestion, nextQuestion}`,
-  explore:   () => `Problem: "${state.problemStatement}"\nALIGN: "${state.notes.align}"\nEXPLORE: "${state.notes.explore}"\n\nGenerate: insight about what's emerging, suggestion to broaden thinking, best exploratory question. JSON: {insight, suggestion, nextQuestion}`,
-  challenge: () => `Problem: "${state.problemStatement}"\nAll notes — ALIGN: "${state.notes.align}" EXPLORE: "${state.notes.explore}" CHALLENGE: "${state.notes.challenge}"\n\nGenerate: insight about assumptions, suggestion to test thinking, best challenging question. JSON: {insight, suggestion, nextQuestion}`,
-  commit:    () => `Problem: "${state.problemStatement}"\nAll notes — ALIGN: "${state.notes.align}" EXPLORE: "${state.notes.explore}" CHALLENGE: "${state.notes.challenge}" COMMIT: "${state.notes.commit}"\n\nSynthesize insights, generate commitment insight, momentum suggestion, best closing accountability question. JSON: {insight, suggestion, nextQuestion}`,
+  align:     () => `Problem: "${appState.problemStatement}"\nALIGN notes: "${appState.notes.align}"\n\nGenerate: insight about alignment, facilitation suggestion, best next open question. JSON: {insight, suggestion, nextQuestion}`,
+  explore:   () => `Problem: "${appState.problemStatement}"\nALIGN: "${appState.notes.align}"\nEXPLORE: "${appState.notes.explore}"\n\nGenerate: insight about what's emerging, suggestion to broaden thinking, best exploratory question. JSON: {insight, suggestion, nextQuestion}`,
+  challenge: () => `Problem: "${appState.problemStatement}"\nAll notes: ALIGN="${appState.notes.align}" EXPLORE="${appState.notes.explore}" CHALLENGE="${appState.notes.challenge}"\n\nGenerate: insight about assumptions, suggestion to test thinking, best challenging question. JSON: {insight, suggestion, nextQuestion}`,
+  commit:    () => `Problem: "${appState.problemStatement}"\nAll notes: ALIGN="${appState.notes.align}" EXPLORE="${appState.notes.explore}" CHALLENGE="${appState.notes.challenge}" COMMIT="${appState.notes.commit}"\n\nSynthesize insights, commitment insight, momentum suggestion, best closing accountability question. JSON: {insight, suggestion, nextQuestion}`,
 };
 
 async function getAI(phase) {
   const loadKey = phase === 'commit' ? 'commit-intel' : phase;
-  state.loading[loadKey] = true;
+  appState.loading[loadKey] = true;
   renderContent();
   const result = await callAI(PROMPTS[phase]());
-  if (result) state.aiResponses[phase] = result;
-  state.loading[loadKey] = false;
+  if (result) appState.aiResponses[phase] = result;
+  appState.loading[loadKey] = false;
   renderContent();
 }
 
 async function generateOpener() {
   const btn = document.getElementById('opener-btn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-pulse">CALCULATING TRAJECTORY...</span>'; }
-  const result = await callAI(`Problem statement: "${state.problemStatement}"\n\nGenerate a single powerful open calibrated question to open the executive conversation. It must create space, surface stakes, and invite honest reflection. Return JSON: { "insight": "context framing", "suggestion": "facilitation tip", "nextQuestion": "the opening question" }`);
-  if (result) state.openingQuestion = result.nextQuestion || result.insight;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-pulse">Calculating Trajectory...</span>'; }
+  const result = await callAI(`Problem statement: "${appState.problemStatement}"\n\nGenerate a single powerful open calibrated question to open the executive conversation. It must create space, surface stakes, and invite honest reflection. Return JSON: { "insight": "context framing", "suggestion": "facilitation tip", "nextQuestion": "the opening question" }`);
+  if (result) appState.openingQuestion = result.nextQuestion || result.insight;
   renderContent();
 }
 
 async function generateCommitment() {
-  state.loading['commit-stmt'] = true;
+  appState.loading['commit-stmt'] = true;
   renderContent();
-  const result = await callAI(`Problem: "${state.problemStatement}"\nAll session notes:\nALIGN: "${state.notes.align}"\nEXPLORE: "${state.notes.explore}"\nCHALLENGE: "${state.notes.challenge}"\nCOMMIT: "${state.notes.commit}"\n\nWrite a clear specific commitment statement (2-3 sentences) capturing what was agreed, why it matters, and what success looks like. Return JSON: { "insight": "the commitment statement", "suggestion": "key risk to watch", "nextQuestion": "accountability question" }`);
-  if (result) state.commitmentStatement = result.insight;
-  state.loading['commit-stmt'] = false;
+  const result = await callAI(`Problem: "${appState.problemStatement}"\nAll session notes:\nALIGN: "${appState.notes.align}"\nEXPLORE: "${appState.notes.explore}"\nCHALLENGE: "${appState.notes.challenge}"\nCOMMIT: "${appState.notes.commit}"\n\nWrite a clear specific commitment statement (2-3 sentences) capturing what was agreed, why it matters, and what success looks like. Return JSON: { "insight": "the commitment statement", "suggestion": "key risk to watch", "nextQuestion": "accountability question" }`);
+  if (result) appState.commitmentStatement = result.insight;
+  appState.loading['commit-stmt'] = false;
   renderContent();
 }
 
 // ── TIMER ──
 function toggleTimer() {
-  if (state.timerRunning) {
-    clearInterval(state.timerInterval);
-    state.timerRunning = false;
-    document.getElementById('timer-start-btn').textContent = '▶ START';
+  if (appState.timerRunning) {
+    clearInterval(appState.timerInterval);
+    appState.timerRunning = false;
+    document.getElementById('timer-start-btn').innerHTML = '&#9654; Start';
     document.getElementById('timer-start-btn').classList.remove('active');
   } else {
-    state.timerInterval = setInterval(() => { state.elapsed++; updateTimerDisplay(); }, 1000);
-    state.timerRunning = true;
-    document.getElementById('timer-start-btn').textContent = '⏸ PAUSE';
+    appState.timerInterval = setInterval(() => { appState.elapsed++; updateTimerDisplay(); }, 1000);
+    appState.timerRunning = true;
+    document.getElementById('timer-start-btn').innerHTML = '&#9646;&#9646; Pause';
     document.getElementById('timer-start-btn').classList.add('active');
   }
 }
 
 function resetTimer() {
-  clearInterval(state.timerInterval);
-  state.timerRunning = false;
-  state.elapsed = 0;
-  document.getElementById('timer-start-btn').textContent = '▶ START';
+  clearInterval(appState.timerInterval);
+  appState.timerRunning = false;
+  appState.elapsed = 0;
+  document.getElementById('timer-start-btn').innerHTML = '&#9654; Start';
   document.getElementById('timer-start-btn').classList.remove('active');
   updateTimerDisplay();
 }
@@ -640,57 +968,57 @@ function resetTimer() {
 function updateTimerDisplay() {
   const el = document.getElementById('timer-display');
   if (!el) return;
-  const m = String(Math.floor(state.elapsed / 60)).padStart(2, '0');
-  const s = String(state.elapsed % 60).padStart(2, '0');
-  el.textContent = `${m}:${s}`;
-  el.style.color = state.elapsed > 1500 ? '#D4887A' : state.elapsed > 1200 ? '#C8941A' : '#9BC99B';
+  const m = String(Math.floor(appState.elapsed / 60)).padStart(2, '0');
+  const s = String(appState.elapsed % 60).padStart(2, '0');
+  el.textContent = m + ':' + s;
+  el.style.color = appState.elapsed > 1500 ? '#D4887A' : appState.elapsed > 1200 ? '#C8941A' : '#9BC99B';
 }
 
 // ── EXPORT ──
 function exportSession() {
-  const m = String(Math.floor(state.elapsed / 60)).padStart(2, '0');
-  const s = String(state.elapsed % 60).padStart(2, '0');
-  const ai = state.aiResponses;
+  const m = String(Math.floor(appState.elapsed / 60)).padStart(2, '0');
+  const s = String(appState.elapsed % 60).padStart(2, '0');
+  const ai = appState.aiResponses;
   const L = '═'.repeat(52);
   const D = '─'.repeat(40);
   const lines = [
     L,
     '  MANDALORIAN EXECUTIVE ALIGNMENT — MISSION DEBRIEF',
     L,
-    `DATE    : ${new Date().toLocaleDateString('en-AU', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}`,
-    `DURATION: ${m}:${s}`,
+    'DATE    : ' + new Date().toLocaleDateString('en-AU', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
+    'DURATION: ' + m + ':' + s,
     '',
     '[ MISSION BRIEF ]', D,
-    state.problemStatement || '—',
+    appState.problemStatement || '—',
     '',
     '[ OPENING GAMBIT ]', D,
-    state.openingQuestion || '—',
+    appState.openingQuestion || '—',
     '',
     '[ ALIGN ]', D,
-    'Notes: ' + (state.notes.align || '—'),
-    ...(ai.align ? [`Intel: ${ai.align.insight}`, `Move: ${ai.align.suggestion}`, `Next Strike: ${ai.align.nextQuestion}`] : []),
+    'Notes: ' + (appState.notes.align || '—'),
+    ...(ai.align    ? ['Intel: '+ai.align.insight,    'Move: '+ai.align.suggestion,    'Next Strike: '+ai.align.nextQuestion]    : []),
     '',
     '[ EXPLORE ]', D,
-    'Notes: ' + (state.notes.explore || '—'),
-    ...(ai.explore ? [`Intel: ${ai.explore.insight}`, `Move: ${ai.explore.suggestion}`, `Next Strike: ${ai.explore.nextQuestion}`] : []),
+    'Notes: ' + (appState.notes.explore || '—'),
+    ...(ai.explore  ? ['Intel: '+ai.explore.insight,  'Move: '+ai.explore.suggestion,  'Next Strike: '+ai.explore.nextQuestion]  : []),
     '',
     '[ CHALLENGE ]', D,
-    'Notes: ' + (state.notes.challenge || '—'),
-    ...(ai.challenge ? [`Intel: ${ai.challenge.insight}`, `Move: ${ai.challenge.suggestion}`, `Next Strike: ${ai.challenge.nextQuestion}`] : []),
+    'Notes: ' + (appState.notes.challenge || '—'),
+    ...(ai.challenge? ['Intel: '+ai.challenge.insight,'Move: '+ai.challenge.suggestion,'Next Strike: '+ai.challenge.nextQuestion]: []),
     '',
     '[ COMMIT ]', D,
-    'Notes: ' + (state.notes.commit || '—'),
-    ...(ai.commit ? [`Intel: ${ai.commit.insight}`, `Move: ${ai.commit.suggestion}`, `Next Strike: ${ai.commit.nextQuestion}`] : []),
+    'Notes: ' + (appState.notes.commit || '—'),
+    ...(ai.commit   ? ['Intel: '+ai.commit.insight,   'Move: '+ai.commit.suggestion,   'Next Strike: '+ai.commit.nextQuestion]   : []),
     '',
     L,
     '  COMMITMENT STATEMENT',
     L,
-    state.commitmentStatement || '— Not yet generated —',
+    appState.commitmentStatement || '— Not yet generated —',
     '',
     L,
     '  ACTION ORDERS',
     L,
-    ...state.actions.filter(a => a.what).map((a, i) => `${i+1}. ${a.what}\n   ASSIGNED: ${a.who||'TBD'}  |  BY: ${a.by||'TBD'}`),
+    ...appState.actions.filter(a => a.what).map((a, i) => (i+1)+'. '+a.what+'\n   ASSIGNED: '+(a.who||'TBD')+'  |  BY: '+(a.by||'TBD')),
     '',
     L,
     '  THIS IS THE WAY.',
@@ -699,12 +1027,13 @@ function exportSession() {
   const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `mission-debrief-${new Date().toISOString().split('T')[0]}.txt`;
-  a.click(); URL.revokeObjectURL(url);
+  a.href = url;
+  a.download = 'mission-debrief-' + new Date().toISOString().split('T')[0] + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── UTILS ──
-// escHtml: safe for innerHTML contexts. For textarea .value, set directly via JS (not innerHTML).
 function escHtml(str) {
   return String(str || '')
     .replace(/&/g,'&amp;')
@@ -713,18 +1042,9 @@ function escHtml(str) {
     .replace(/"/g,'&quot;')
     .replace(/'/g,'&#39;');
 }
-// escAttr: safe for attribute values like value="..."
-function escAttr(str) {
-  return String(str || '')
-    .replace(/&/g,'&amp;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-}
 
-// ── INIT ──
-renderContent();
+// ── BOOT ──
+init();
 </script>
 </body>
 </html>
