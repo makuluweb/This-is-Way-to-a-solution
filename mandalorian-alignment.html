@@ -492,6 +492,251 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: var(--void); }
   ::-webkit-scrollbar-thumb { background: var(--beskar-dark); }
+
+  /* ── PRINT / PDF STYLES ── */
+  @media print {
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    body {
+      background: #fff !important;
+      color: #1a1a1a !important;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9pt;
+      line-height: 1.5;
+    }
+
+    body::before { display: none !important; }
+
+    /* Hide interactive UI */
+    #key-overlay,
+    .mando-header,
+    .phase-nav,
+    .phase-content,
+    #app > .mando-header,
+    #app > .phase-nav,
+    #app > .phase-content { display: none !important; }
+
+    /* Show only the print report */
+    #print-report { display: block !important; }
+
+    /* Report layout */
+    .pr-page { page-break-after: avoid; }
+
+    .pr-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 3px solid #C8941A;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .pr-header-text {}
+    .pr-callsign {
+      font-family: 'Orbitron', monospace;
+      font-size: 7pt;
+      letter-spacing: 0.3em;
+      color: #C8941A;
+      text-transform: uppercase;
+    }
+    .pr-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 14pt;
+      font-weight: 900;
+      color: #1a1a1a;
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+    }
+    .pr-meta {
+      font-size: 8pt;
+      color: #666;
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .pr-section {
+      margin-bottom: 14pt;
+      page-break-inside: avoid;
+    }
+
+    .pr-section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #C8941A;
+      border-bottom: 1px solid #C8941A;
+      padding-bottom: 3pt;
+      margin-bottom: 8pt;
+      display: flex;
+      align-items: center;
+      gap: 6pt;
+    }
+    .pr-section-title::before {
+      content: '';
+      display: inline-block;
+      width: 6pt;
+      height: 6pt;
+      background: #C8941A;
+    }
+
+    .pr-notes-box {
+      background: #f5f5f0;
+      border-left: 3pt solid #8C9A8E;
+      padding: 8pt 10pt;
+      font-size: 9pt;
+      color: #1a1a1a;
+      min-height: 18pt;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .pr-empty { color: #999; font-style: italic; }
+
+    .pr-intel-block {
+      margin-top: 6pt;
+      border: 1pt solid #d0d0c8;
+      background: #fafaf7;
+    }
+
+    .pr-intel-header {
+      background: #f0ede0;
+      padding: 4pt 8pt;
+      font-family: 'Orbitron', monospace;
+      font-size: 6.5pt;
+      letter-spacing: 0.2em;
+      color: #8a6a10;
+      text-transform: uppercase;
+      border-bottom: 1pt solid #d0d0c8;
+    }
+
+    .pr-intel-row {
+      padding: 5pt 8pt;
+      border-bottom: 1pt solid #e8e8e0;
+      display: flex;
+      gap: 8pt;
+    }
+    .pr-intel-row:last-child { border-bottom: none; }
+
+    .pr-intel-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 6pt;
+      letter-spacing: 0.15em;
+      color: #999;
+      text-transform: uppercase;
+      width: 72pt;
+      flex-shrink: 0;
+      padding-top: 1pt;
+    }
+
+    .pr-intel-value { font-size: 8.5pt; color: #1a1a1a; flex: 1; }
+
+    .pr-question {
+      font-style: italic;
+      color: #333;
+      border-left: 2pt solid #8C9A8E;
+      padding-left: 6pt;
+    }
+
+    .pr-commitment {
+      background: #fdf8ed;
+      border: 1.5pt solid #C8941A;
+      padding: 10pt 12pt;
+      font-size: 10pt;
+      font-style: italic;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+
+    .pr-actions-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      margin-top: 4pt;
+    }
+    .pr-actions-table th {
+      background: #2A3A2C;
+      color: #C8D4C0;
+      font-family: 'Orbitron', monospace;
+      font-size: 6.5pt;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4pt 8pt;
+      text-align: left;
+    }
+    .pr-actions-table td {
+      padding: 5pt 8pt;
+      border-bottom: 1pt solid #e0e0d8;
+      vertical-align: top;
+    }
+    .pr-actions-table tr:last-child td { border-bottom: none; }
+    .pr-actions-table tr:nth-child(even) td { background: #f8f8f4; }
+    .pr-action-num {
+      color: #C8941A;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      font-size: 8pt;
+    }
+
+    .pr-footer {
+      margin-top: 20pt;
+      padding-top: 8pt;
+      border-top: 1pt solid #C8941A;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7.5pt;
+      color: #999;
+      font-family: 'Orbitron', monospace;
+      letter-spacing: 0.15em;
+    }
+
+    .pr-opening-q {
+      background: #f0ede0;
+      border-left: 3pt solid #C8941A;
+      padding: 8pt 10pt;
+      font-size: 10pt;
+      font-style: italic;
+      color: #2a2a1a;
+      line-height: 1.6;
+    }
+
+    .pr-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12pt;
+    }
+
+    .pr-phase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10pt;
+      margin-bottom: 10pt;
+    }
+
+    .pr-phase-card {
+      border: 1pt solid #d0d0c8;
+      background: #fafaf7;
+      page-break-inside: avoid;
+    }
+
+    .pr-phase-card-title {
+      background: #2A3A2C;
+      color: #C8D4C0;
+      font-family: 'Orbitron', monospace;
+      font-size: 7pt;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 4pt 8pt;
+    }
+
+    .pr-phase-card-body { padding: 6pt 8pt; }
+  }
 </style>
 </head>
 <body>
@@ -562,7 +807,9 @@
           <button class="btn-small" onclick="resetTimer()">&#8635; Reset</button>
         </div>
       </div>
-      <button class="export-btn" onclick="exportSession()">&#8595; Debrief</button>
+  <!-- ── EXPORT BUTTONS ── -->
+      <button class="export-btn" onclick="exportTXT()">&#8595; TXT</button>
+      <button class="export-btn" onclick="exportPDF()" style="margin-left:4px;">&#8595; PDF</button>
     </div>
   </div>
 
@@ -974,13 +1221,23 @@ function updateTimerDisplay() {
   el.style.color = appState.elapsed > 1500 ? '#D4887A' : appState.elapsed > 1200 ? '#C8941A' : '#9BC99B';
 }
 
-// ── EXPORT ──
-function exportSession() {
+// ── EXPORT TXT ──
+function exportTXT() {
   const m = String(Math.floor(appState.elapsed / 60)).padStart(2, '0');
   const s = String(appState.elapsed % 60).padStart(2, '0');
   const ai = appState.aiResponses;
   const L = '═'.repeat(52);
   const D = '─'.repeat(40);
+  const section = (title, notes, aiData) => [
+    '[ ' + title + ' ]', D,
+    'Notes: ' + (notes || '—'),
+    ...(aiData ? [
+      'Intel:       ' + (aiData.insight    || '—'),
+      'Move:        ' + (aiData.suggestion  || '—'),
+      'Next Strike: ' + (aiData.nextQuestion|| '—'),
+    ] : []),
+    '',
+  ];
   const lines = [
     L,
     '  MANDALORIAN EXECUTIVE ALIGNMENT — MISSION DEBRIEF',
@@ -994,22 +1251,10 @@ function exportSession() {
     '[ OPENING GAMBIT ]', D,
     appState.openingQuestion || '—',
     '',
-    '[ ALIGN ]', D,
-    'Notes: ' + (appState.notes.align || '—'),
-    ...(ai.align    ? ['Intel: '+ai.align.insight,    'Move: '+ai.align.suggestion,    'Next Strike: '+ai.align.nextQuestion]    : []),
-    '',
-    '[ EXPLORE ]', D,
-    'Notes: ' + (appState.notes.explore || '—'),
-    ...(ai.explore  ? ['Intel: '+ai.explore.insight,  'Move: '+ai.explore.suggestion,  'Next Strike: '+ai.explore.nextQuestion]  : []),
-    '',
-    '[ CHALLENGE ]', D,
-    'Notes: ' + (appState.notes.challenge || '—'),
-    ...(ai.challenge? ['Intel: '+ai.challenge.insight,'Move: '+ai.challenge.suggestion,'Next Strike: '+ai.challenge.nextQuestion]: []),
-    '',
-    '[ COMMIT ]', D,
-    'Notes: ' + (appState.notes.commit || '—'),
-    ...(ai.commit   ? ['Intel: '+ai.commit.insight,   'Move: '+ai.commit.suggestion,   'Next Strike: '+ai.commit.nextQuestion]   : []),
-    '',
+    ...section('ALIGN',     appState.notes.align,     ai.align),
+    ...section('EXPLORE',   appState.notes.explore,   ai.explore),
+    ...section('CHALLENGE', appState.notes.challenge, ai.challenge),
+    ...section('COMMIT',    appState.notes.commit,    ai.commit),
     L,
     '  COMMITMENT STATEMENT',
     L,
@@ -1018,7 +1263,10 @@ function exportSession() {
     L,
     '  ACTION ORDERS',
     L,
-    ...appState.actions.filter(a => a.what).map((a, i) => (i+1)+'. '+a.what+'\n   ASSIGNED: '+(a.who||'TBD')+'  |  BY: '+(a.by||'TBD')),
+    ...appState.actions.filter(a => a.what).map((a, i) =>
+      (i+1) + '. ' + a.what + '\n   ASSIGNED: ' + (a.who||'TBD') + '  |  BY: ' + (a.by||'TBD')
+    ),
+    appState.actions.filter(a => a.what).length === 0 ? '— No actions recorded —' : '',
     '',
     L,
     '  THIS IS THE WAY.',
@@ -1031,6 +1279,119 @@ function exportSession() {
   a.download = 'mission-debrief-' + new Date().toISOString().split('T')[0] + '.txt';
   a.click();
   URL.revokeObjectURL(url);
+}
+
+// ── EXPORT PDF (print dialog) ──
+function exportPDF() {
+  const ai = appState.aiResponses;
+  const m = String(Math.floor(appState.elapsed / 60)).padStart(2, '0');
+  const s = String(appState.elapsed % 60).padStart(2, '0');
+  const date = new Date().toLocaleDateString('en-AU', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  function phaseBlock(id, label, notes, aiData) {
+    const notesHtml = notes
+      ? `<div class="pr-notes-box">${escHtml(notes)}</div>`
+      : `<div class="pr-notes-box pr-empty">No notes recorded for this phase.</div>`;
+    const intelHtml = aiData ? `
+      <div class="pr-intel-block">
+        <div class="pr-intel-header">&#9654; AI Tactical Analysis</div>
+        ${aiData.insight    ? `<div class="pr-intel-row"><div class="pr-intel-label">Signal</div><div class="pr-intel-value">${escHtml(aiData.insight)}</div></div>` : ''}
+        ${aiData.suggestion ? `<div class="pr-intel-row"><div class="pr-intel-label">Move</div><div class="pr-intel-value">${escHtml(aiData.suggestion)}</div></div>` : ''}
+        ${aiData.nextQuestion ? `<div class="pr-intel-row"><div class="pr-intel-label">Next Strike</div><div class="pr-intel-value pr-question">"${escHtml(aiData.nextQuestion)}"</div></div>` : ''}
+      </div>` : '';
+    return `
+      <div class="pr-section">
+        <div class="pr-section-title">${label}</div>
+        ${notesHtml}
+        ${intelHtml}
+      </div>`;
+  }
+
+  const actionsHtml = appState.actions.filter(a => a.what).length > 0 ? `
+    <table class="pr-actions-table">
+      <thead><tr>
+        <th style="width:22pt;">#</th>
+        <th>Action</th>
+        <th style="width:90pt;">Assigned To</th>
+        <th style="width:70pt;">By When</th>
+      </tr></thead>
+      <tbody>
+        ${appState.actions.filter(a => a.what).map((a, i) => `
+          <tr>
+            <td><span class="pr-action-num">${i+1}</span></td>
+            <td>${escHtml(a.what)}</td>
+            <td>${escHtml(a.who) || '<span style="color:#999">TBD</span>'}</td>
+            <td>${escHtml(a.by)  || '<span style="color:#999">TBD</span>'}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>` : `<div class="pr-notes-box pr-empty">No actions recorded.</div>`;
+
+  const reportHtml = `
+    <div class="pr-page">
+      <div class="pr-header">
+        <svg width="44" height="50" viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+          <path d="M20 2C11 2 4 10 4 20V30L8 38H12L14 42H26L28 38H32L36 30V20C36 10 29 2 20 2Z" fill="#3A4A3C" stroke="#C8941A" stroke-width="1.5"/>
+          <path d="M8 22L12 18H28L32 22V28L28 32H12L8 28V22Z" fill="#2A3A2C" stroke="#6A7A6C" stroke-width="0.5"/>
+          <path d="M12 20H28V22H12V20Z" fill="#C8941A"/>
+          <path d="M14 22H26V26H14V22Z" fill="#1A211C"/>
+          <path d="M14 22H20V26H14V22Z" fill="#0A140C"/>
+          <path d="M8 28L12 32V38H8L6 32L8 28Z" fill="#3A4A3C" stroke="#5A6A5C" stroke-width="0.5"/>
+          <path d="M32 28L28 32V38H32L34 32L32 28Z" fill="#3A4A3C" stroke="#5A6A5C" stroke-width="0.5"/>
+        </svg>
+        <div class="pr-header-text">
+          <div class="pr-callsign">Mandalorian Tactical Framework</div>
+          <div class="pr-title">Mission Debrief</div>
+          <div class="pr-meta">Date: ${date} &nbsp;|&nbsp; Duration: ${m}:${s}</div>
+        </div>
+      </div>
+
+      <div class="pr-section">
+        <div class="pr-section-title">Mission Brief — Problem Statement</div>
+        <div class="pr-notes-box">${appState.problemStatement ? escHtml(appState.problemStatement) : '<span class="pr-empty">Not defined.</span>'}</div>
+      </div>
+
+      ${appState.openingQuestion ? `
+      <div class="pr-section">
+        <div class="pr-section-title">Opening Gambit — Calibrated Question</div>
+        <div class="pr-opening-q">"${escHtml(appState.openingQuestion)}"</div>
+      </div>` : ''}
+
+      <div class="pr-phase-grid">
+        <div>
+          ${phaseBlock('align', 'Align Phase', appState.notes.align, ai.align)}
+        </div>
+        <div>
+          ${phaseBlock('explore', 'Explore Phase', appState.notes.explore, ai.explore)}
+        </div>
+      </div>
+
+      ${phaseBlock('challenge', 'Challenge Phase', appState.notes.challenge, ai.challenge)}
+      ${phaseBlock('commit',    'Commit Phase',    appState.notes.commit,    ai.commit)}
+
+      ${appState.commitmentStatement ? `
+      <div class="pr-section">
+        <div class="pr-section-title">Commitment Statement</div>
+        <div class="pr-commitment">"${escHtml(appState.commitmentStatement)}"</div>
+      </div>` : ''}
+
+      <div class="pr-section">
+        <div class="pr-section-title">Action Orders</div>
+        ${actionsHtml}
+      </div>
+
+      <div class="pr-footer">
+        <span>MANDALORIAN EXECUTIVE ALIGNMENT PROTOCOL</span>
+        <span>THIS IS THE WAY.</span>
+      </div>
+    </div>`;
+
+  const printEl = document.getElementById('print-report');
+  printEl.innerHTML = reportHtml;
+
+  // Trigger print after a brief render delay
+  setTimeout(() => {
+    window.print();
+  }, 150);
 }
 
 // ── UTILS ──
@@ -1046,5 +1407,8 @@ function escHtml(str) {
 // ── BOOT ──
 init();
 </script>
+<!-- ── PRINT REPORT (hidden on screen, shown on print) ── -->
+<div id="print-report" style="display:none;"></div>
+
 </body>
 </html>
