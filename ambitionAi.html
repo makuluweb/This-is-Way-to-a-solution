@@ -1242,6 +1242,7 @@ body{
         <div class="key-dot"></div>
         API Active
       </div>
+      <button class="top-btn" onclick="changeApiKey()" title="Change API Key" style="opacity:.7;">🔑 Key</button>
       <button class="top-btn" onclick="exportJSON()">↓ Backup</button>
       <button class="top-btn" onclick="document.getElementById('import-file').click()">↑ Restore</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
@@ -1409,8 +1410,33 @@ body{
 </div><!-- /main-app -->
 
 <!-- ═══════════════════════════════════════════
-     PROFILE MODAL
+     API KEY MODAL
 ════════════════════════════════════════════ -->
+<div class="modal-overlay" id="key-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>🔑 API Key</h2>
+      <p>Update or replace your Anthropic API key</p>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">New API Key</label>
+        <div style="position:relative;">
+          <input class="k-input" id="key-modal-input" type="password" placeholder="sk-ant-api03-…" autocomplete="off"
+            onkeydown="if(event.key==='Enter')saveNewKey()">
+          <button onclick="(()=>{const i=document.getElementById('key-modal-input');i.type=i.type==='password'?'text':'password';})()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--grey-400);font-size:1rem;">👁</button>
+        </div>
+        <div id="key-modal-error" style="display:none;color:#DC2626;font-size:.72rem;margin-top:5px;"></div>
+        <div class="field-hint">Your key starts with <code>sk-ant-</code> — find it at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--kpmg-blue-light);">console.anthropic.com</a></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="clearAndReauth()" style="margin-right:auto;color:#DC2626;border-color:#FECACA;">Sign Out & Reset</button>
+      <button class="btn-secondary" onclick="closeKeyModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveNewKey()">Save Key</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="profile-modal">
   <div class="modal-box">
     <div class="modal-head">
@@ -1988,7 +2014,17 @@ async function aiAdvise(type, mode) {
       })
     });
     const data = await res.json();
-    const text = data.content?.find(b => b.type==='text')?.text || data.error?.message || 'No response received.';
+
+    // Detect API-level errors (invalid key, quota, etc.)
+    if (data.error) {
+      respEl.style.display = 'block';
+      respEl.style.alignItems = '';
+      const isAuthError = res.status === 401 || data.error.type === 'authentication_error';
+      respEl.innerHTML = `<span style="color:#fca5a5;">⚠ ${data.error.message || 'API error'}</span>${isAuthError ? `<br><br><button onclick="changeApiKey()" style="margin-top:4px;padding:6px 14px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:white;font-size:.78rem;cursor:pointer;">🔑 Change API Key</button>` : ''}`;
+      return;
+    }
+
+    const text = data.content?.find(b => b.type==='text')?.text || 'No response received.';
     respEl.style.display = 'block';
     respEl.style.alignItems = '';
     respEl.textContent = text;
@@ -2001,7 +2037,7 @@ async function aiAdvise(type, mode) {
   } catch(e) {
     respEl.style.display = 'block';
     respEl.style.alignItems = '';
-    respEl.textContent = 'AI Advisor unavailable — please check your API key and connection.';
+    respEl.innerHTML = `<span style="color:#fca5a5;">⚠ Could not reach Anthropic API. Check your internet connection.</span>`;
   }
 }
 
@@ -2159,9 +2195,39 @@ function escAttr(s) {
   return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,' ');
 }
 
-function removeCommentary(id) {
-  state.groguCommentary = (state.groguCommentary||[]).filter(c => c.id !== id);
-  save(); renderPathway();
+function changeApiKey() {
+  document.getElementById('key-modal').classList.add('open');
+  const inp = document.getElementById('key-modal-input');
+  inp.value = '';
+  inp.type = 'password';
+  document.getElementById('key-modal-error').style.display = 'none';
+}
+
+function closeKeyModal() {
+  document.getElementById('key-modal').classList.remove('open');
+}
+
+function saveNewKey() {
+  const key = document.getElementById('key-modal-input').value.trim();
+  const errEl = document.getElementById('key-modal-error');
+  if (!key || !key.startsWith('sk-ant-')) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Key must begin with sk-ant-';
+    return;
+  }
+  API_KEY = key;
+  localStorage.setItem('ambition-kpmg-key', key);
+  closeKeyModal();
+  showToast('✅ API key updated successfully.');
+}
+
+function clearAndReauth() {
+  localStorage.removeItem('ambition-kpmg-key');
+  API_KEY = '';
+  closeKeyModal();
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('api-key-input').value = '';
 }
 
 function goStep(n, tabEl) {
