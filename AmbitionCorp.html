@@ -882,6 +882,47 @@ body{
 }
 .ai-chip:hover{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.5);}
 
+.ai-save-btn{
+  padding:7px 16px;
+  background:rgba(255,255,255,0.18);
+  border:1.5px solid rgba(255,255,255,0.4);
+  border-radius:var(--radius);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-size:0.78rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s;
+}
+.ai-save-btn:hover{background:rgba(255,255,255,0.32);border-color:var(--white);}
+
+.grogu-commentary-strip{
+  background:linear-gradient(135deg,rgba(0,51,141,0.06),rgba(0,71,187,0.04));
+  border:1px solid var(--kpmg-blue-pale);
+  border-left:3px solid var(--kpmg-blue-light);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  margin-bottom:10px;
+  animation:fadeUp .2s ease both;
+}
+
+.grogu-commentary-head{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:8px;
+  font-size:0.68rem;
+  font-weight:600;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--kpmg-blue-light);
+}
+
+.grogu-commentary-text{
+  font-size:0.83rem;
+  color:var(--grey-700);
+  line-height:1.65;
+  white-space:pre-wrap;
+}
+
 .ai-response-box{
   background:rgba(0,0,0,0.2);
   border:1px solid rgba(255,255,255,0.12);
@@ -1253,13 +1294,17 @@ body{
         + Add Ambition
       </button>
 
-      <!-- AI ADVISOR -->
+      <!-- ASK GROGU -->
       <div class="ai-card">
-        <div class="ai-eyebrow">KPMG AI Advisor</div>
+        <div class="ai-eyebrow">🐸 Ask Grogu</div>
         <div class="ai-title">Challenge Your Ambition</div>
-        <div class="ai-subtitle">Our AI coaching advisor will help you forge a powerful ambition statement, push you to think bigger, and surface critical guardrails.</div>
+        <div class="ai-subtitle">Grogu will help you forge a powerful ambition statement, push you to think bigger, and surface critical guardrails.</div>
         <div class="ai-response-box" id="ai-amb-resp"></div>
-        <div class="ai-chips">
+        <div class="ai-response-actions" id="ai-amb-actions" style="display:none;margin-top:10px;position:relative;z-index:1;display:none;gap:8px;flex-wrap:wrap;">
+          <button class="ai-save-btn" onclick="saveGroguResponse('ambition','guardrail')">+ Save as Guardrail</button>
+          <button class="ai-save-btn" onclick="saveGroguResponse('ambition','commentary')">📎 Save as Commentary</button>
+        </div>
+        <div class="ai-chips" style="margin-top:14px;">
           <button class="ai-chip" onclick="aiAdvise('ambition','forge')">Forge ambition statement</button>
           <button class="ai-chip" onclick="aiAdvise('ambition','bolder')">Push me to think bigger</button>
           <button class="ai-chip" onclick="aiAdvise('ambition','guardrails')">Suggest guardrails</button>
@@ -1285,11 +1330,15 @@ body{
       <div id="intentions-container"></div>
 
       <div class="ai-card">
-        <div class="ai-eyebrow">KPMG AI Advisor</div>
+        <div class="ai-eyebrow">🐸 Ask Grogu</div>
         <div class="ai-title">Sharpen Your Intentions</div>
-        <div class="ai-subtitle">The AI advisor will help you name the specific mindsets and behaviours that will make the decisive difference in achieving your ambitions.</div>
+        <div class="ai-subtitle">Grogu will help you name the specific mindsets and behaviours that will make the decisive difference in achieving your ambitions.</div>
         <div class="ai-response-box" id="ai-int-resp"></div>
-        <div class="ai-chips">
+        <div class="ai-response-actions" id="ai-int-actions" style="display:none;margin-top:10px;position:relative;z-index:1;gap:8px;flex-wrap:wrap;">
+          <button class="ai-save-btn" onclick="saveGroguResponse('intention','intention')">+ Save as Intention</button>
+          <button class="ai-save-btn" onclick="saveGroguResponse('intention','commentary')">📎 Save as Commentary</button>
+        </div>
+        <div class="ai-chips" style="margin-top:14px;">
           <button class="ai-chip" onclick="aiAdvise('intention','behaviours')">Suggest key behaviours</button>
           <button class="ai-chip" onclick="aiAdvise('intention','mindset')">Identify mindset shifts</button>
           <button class="ai-chip" onclick="aiAdvise('intention','obstacles')">Surface likely obstacles</button>
@@ -1315,11 +1364,15 @@ body{
       <div id="actions-container"></div>
 
       <div class="ai-card">
-        <div class="ai-eyebrow">KPMG AI Advisor</div>
+        <div class="ai-eyebrow">🐸 Ask Grogu</div>
         <div class="ai-title">Strengthen Your Action Plan</div>
-        <div class="ai-subtitle">The AI advisor will help you sharpen your actions, identify sequencing opportunities, and surface any critical gaps in your plan.</div>
+        <div class="ai-subtitle">Grogu will help you sharpen your actions, identify sequencing opportunities, and surface any critical gaps in your plan.</div>
         <div class="ai-response-box" id="ai-act-resp"></div>
-        <div class="ai-chips">
+        <div class="ai-response-actions" id="ai-act-actions" style="display:none;margin-top:10px;position:relative;z-index:1;gap:8px;flex-wrap:wrap;">
+          <button class="ai-save-btn" onclick="saveGroguResponse('action','action')">+ Save as Action</button>
+          <button class="ai-save-btn" onclick="saveGroguResponse('action','commentary')">📎 Save as Commentary</button>
+        </div>
+        <div class="ai-chips" style="margin-top:14px;">
           <button class="ai-chip" onclick="aiAdvise('action','specific')">Make actions more specific</button>
           <button class="ai-chip" onclick="aiAdvise('action','sequence')">Suggest sequencing</button>
           <button class="ai-chip" onclick="aiAdvise('action','missing')">Identify gaps</button>
@@ -1406,7 +1459,8 @@ let state = {
   profile: { name:'', role:'', org:'', avatar:'' },
   ambitions: [],
   intentions: [],
-  actions: []
+  actions: [],
+  groguCommentary: []   // { id, step, text, savedAt }
 };
 
 /* ═══════════════════════════════════════════
@@ -1796,6 +1850,28 @@ function renderPathway() {
     return;
   }
 
+  // Grogu Commentary Section
+  if (state.groguCommentary && state.groguCommentary.length) {
+    const gc = document.createElement('div');
+    gc.style.marginBottom = '28px';
+    gc.innerHTML = `<div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--kpmg-blue);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--kpmg-blue-pale);">🐸 Grogu Commentary</div>`;
+    state.groguCommentary.forEach(entry => {
+      const stepLabels = { ambition:'Ambitions', intention:'Intentions', action:'Actions' };
+      const date = new Date(entry.savedAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const div = document.createElement('div');
+      div.className = 'grogu-commentary-strip';
+      div.innerHTML = `<div class="grogu-commentary-head">
+          <span>🐸 Ask Grogu</span>
+          <span style="color:var(--grey-400);font-weight:400;text-transform:none;letter-spacing:0;">·</span>
+          <span style="color:var(--grey-500);font-weight:400;text-transform:none;letter-spacing:0;">${stepLabels[entry.step]||entry.step} · ${date}</span>
+          <button onclick="removeCommentary('${entry.id}')" class="btn-icon" style="margin-left:auto;font-size:.8rem;" title="Remove">✕</button>
+        </div>
+        <div class="grogu-commentary-text">${esc(entry.text)}</div>`;
+      gc.appendChild(div);
+    });
+    c.appendChild(gc);
+  }
+
   state.ambitions.forEach((a, i) => {
     const wrap = document.createElement('div');
     wrap.className = 'pathway-ambition-card';
@@ -1916,6 +1992,12 @@ async function aiAdvise(type, mode) {
     respEl.style.display = 'block';
     respEl.style.alignItems = '';
     respEl.textContent = text;
+    // store last response for saving
+    respEl.dataset.lastResponse = text;
+    respEl.dataset.step = type;
+    // show save action buttons
+    const actionsEl = document.getElementById(`ai-${type.substring(0,3)}-actions`);
+    if (actionsEl) actionsEl.style.display = 'flex';
   } catch(e) {
     respEl.style.display = 'block';
     respEl.style.alignItems = '';
@@ -1924,8 +2006,164 @@ async function aiAdvise(type, mode) {
 }
 
 /* ═══════════════════════════════════════════
-   NAVIGATION & PROGRESS
+   SAVE GROGU RESPONSE
 ═══════════════════════════════════════════ */
+function saveGroguResponse(step, saveAs) {
+  const respEl = document.getElementById(`ai-${step.substring(0,3)}-resp`);
+  const text = respEl?.dataset?.lastResponse;
+  if (!text) { alert('No Grogu response to save yet.'); return; }
+
+  if (saveAs === 'commentary') {
+    // Save to groguCommentary array
+    if (!state.groguCommentary) state.groguCommentary = [];
+    state.groguCommentary.push({
+      id: 'gc' + Date.now(),
+      step,
+      text,
+      savedAt: new Date().toISOString()
+    });
+    save();
+    showToast('💾 Saved as Grogu Commentary — will appear in your export.');
+
+  } else if (saveAs === 'intention') {
+    // Add as intention — linked to first ambition if exists
+    if (!state.ambitions.length) {
+      alert('Please add an ambition first before saving intentions.');
+      return;
+    }
+    // Show ambition picker if multiple
+    if (state.ambitions.length === 1) {
+      const id = 'i' + Date.now();
+      state.intentions.push({ id, ambitionId: state.ambitions[0].id, text });
+      save();
+      showToast('✅ Saved as Intention — visible in Step 02.');
+    } else {
+      showAmbitionPicker(text, 'intention');
+    }
+
+  } else if (saveAs === 'action') {
+    // Add as action — need an intention to link to
+    if (!state.intentions.length) {
+      alert('Please add at least one intention first before saving actions.');
+      return;
+    }
+    if (state.intentions.length === 1) {
+      const id = 'ac' + Date.now();
+      state.actions.push({
+        id, intentionId: state.intentions[0].id,
+        ambitionId: state.intentions[0].ambitionId,
+        title: text.substring(0, 80),
+        description: text,
+        outcome: '', startDate: '', endDate: '', status: 'planned'
+      });
+      save();
+      showToast('✅ Saved as Action — visible in Step 03.');
+    } else {
+      showIntentionPicker(text);
+    }
+
+  } else if (saveAs === 'guardrail') {
+    if (!state.ambitions.length) {
+      alert('Please add an ambition first.');
+      return;
+    }
+    if (state.ambitions.length === 1) {
+      state.ambitions[0].guardrails.push(text);
+      save();
+      renderAmbitions();
+      showToast('✅ Saved as Guardrail on your ambition.');
+    } else {
+      showAmbitionPicker(text, 'guardrail');
+    }
+  }
+}
+
+function showAmbitionPicker(text, saveAs) {
+  const opts = state.ambitions.map((a, i) =>
+    `<option value="${a.id}">Ambition ${i+1}: ${(a.title||'Untitled').substring(0,40)}</option>`
+  ).join('');
+  const sel = document.createElement('div');
+  sel.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center;';
+  sel.innerHTML = `<div style="background:var(--white);border-radius:8px;padding:28px;width:min(420px,92vw);box-shadow:0 8px 32px rgba(0,0,0,.2);">
+    <div style="font-weight:700;color:var(--kpmg-blue);margin-bottom:16px;font-size:1rem;">Link to which Ambition?</div>
+    <select id="picker-sel" class="k-input" style="margin-bottom:16px;">${opts}</select>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn-secondary" onclick="this.closest('div[style]').remove()">Cancel</button>
+      <button class="btn-primary" onclick="confirmAmbitionPick('${saveAs}','${escAttr(text)}',this)">Save</button>
+    </div>
+  </div>`;
+  document.body.appendChild(sel);
+}
+
+function confirmAmbitionPick(saveAs, text, btn) {
+  const aid = document.getElementById('picker-sel').value;
+  const realText = btn.closest('div[style]').querySelector('select').value;
+  const ambId = document.getElementById('picker-sel').value;
+  if (saveAs === 'guardrail') {
+    const a = state.ambitions.find(x => x.id === ambId);
+    if (a) { a.guardrails.push(text); save(); renderAmbitions(); }
+    showToast('✅ Saved as Guardrail.');
+  } else if (saveAs === 'intention') {
+    const id = 'i' + Date.now();
+    state.intentions.push({ id, ambitionId: ambId, text });
+    save();
+    showToast('✅ Saved as Intention.');
+  }
+  btn.closest('[style*="position:fixed"]').remove();
+}
+
+function showIntentionPicker(text) {
+  const opts = state.intentions.map((int, i) => {
+    const a = state.ambitions.find(a => a.id === int.ambitionId);
+    const label = `${a ? (a.title||'Untitled').substring(0,30) + ' › ' : ''}${(int.text||'Untitled').substring(0,40)}`;
+    return `<option value="${int.id}">${label}</option>`;
+  }).join('');
+  const sel = document.createElement('div');
+  sel.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center;';
+  sel.innerHTML = `<div style="background:var(--white);border-radius:8px;padding:28px;width:min(440px,92vw);box-shadow:0 8px 32px rgba(0,0,0,.2);">
+    <div style="font-weight:700;color:var(--kpmg-blue);margin-bottom:16px;font-size:1rem;">Link Action to which Intention?</div>
+    <select id="int-picker-sel" class="k-input" style="margin-bottom:16px;">${opts}</select>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn-secondary" onclick="this.closest('[style*=fixed]').remove()">Cancel</button>
+      <button class="btn-primary" onclick="confirmIntentionPick('${escAttr(text)}',this)">Save</button>
+    </div>
+  </div>`;
+  document.body.appendChild(sel);
+}
+
+function confirmIntentionPick(text, btn) {
+  const iid = document.getElementById('int-picker-sel').value;
+  const intent = state.intentions.find(i => i.id === iid);
+  const id = 'ac' + Date.now();
+  state.actions.push({
+    id, intentionId: iid,
+    ambitionId: intent ? intent.ambitionId : '',
+    title: text.substring(0, 80),
+    description: text,
+    outcome: '', startDate: '', endDate: '', status: 'planned'
+  });
+  save();
+  showToast('✅ Saved as Action — visible in Step 03.');
+  btn.closest('[style*="position:fixed"]').remove();
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:28px;right:28px;background:var(--grey-900);color:var(--white);padding:12px 20px;border-radius:6px;font-size:.82rem;font-weight:500;z-index:9000;box-shadow:0 4px 16px rgba(0,0,0,.3);animation:fadeUp .2s ease both;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+function escAttr(s) {
+  return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,' ');
+}
+
+function removeCommentary(id) {
+  state.groguCommentary = (state.groguCommentary||[]).filter(c => c.id !== id);
+  save(); renderPathway();
+}
+
 function goStep(n, tabEl) {
   document.querySelectorAll('.top-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
@@ -1980,7 +2218,9 @@ function importJSON(e) {
     try {
       const d = JSON.parse(ev.target.result);
       if (d.ambitions !== undefined) {
-        state = d; save();
+        state = d;
+        if (!state.groguCommentary) state.groguCommentary = [];
+        save();
         renderProfile(); renderAmbitions();
         alert('✓ Data restored successfully.');
       } else alert('Invalid backup file.');
@@ -1999,32 +2239,43 @@ function exportPDF() {
     <title>${esc(name)} — KPMG Ambition Pathway</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
     <style>
-      :root{--kpmg-blue:#00338D;--kpmg-blue-mid:#0047BB;--kpmg-blue-pale:#E8F0FB;--kpmg-teal-light:#00A3A1;--kpmg-violet:#6D2077;--white:#FFFFFF;--grey-50:#FAFAFA;--grey-100:#F5F5F5;--grey-200:#EEEEEE;--grey-400:#BDBDBD;--grey-500:#9E9E9E;--grey-600:#757575;--grey-800:#424242;}
+      :root{--kpmg-blue:#00338D;--kpmg-blue-mid:#0047BB;--kpmg-blue-light:#0091DA;--kpmg-blue-pale:#E8F0FB;--kpmg-teal-light:#00A3A1;--kpmg-violet:#6D2077;--white:#FFFFFF;--grey-50:#FAFAFA;--grey-100:#F5F5F5;--grey-200:#EEEEEE;--grey-400:#BDBDBD;--grey-500:#9E9E9E;--grey-600:#757575;--grey-700:#616161;--grey-800:#424242;--grey-900:#212121;}
       *{box-sizing:border-box;margin:0;padding:0;}
-      body{font-family:'Inter',sans-serif;background:var(--grey-100);color:var(--grey-800);padding:40px;max-width:860px;margin:0 auto;font-size:13px;}
-      h1{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--kpmg-blue);margin-bottom:4px;}
-      .sub{font-size:.7rem;color:var(--grey-500);letter-spacing:.06em;margin-bottom:28px;}
-      .pathway-header-card{background:var(--kpmg-blue);border-radius:6px;padding:22px 26px;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
+      body{font-family:'Inter',sans-serif;background:white;color:var(--grey-800);padding:36px 40px;max-width:860px;margin:0 auto;font-size:13px;line-height:1.5;}
+      .kpmg-header{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:16px;border-bottom:3px solid var(--kpmg-blue);margin-bottom:28px;}
+      .kpmg-wordmark{font-family:'Inter',sans-serif;font-weight:700;font-size:1.4rem;letter-spacing:.14em;color:var(--kpmg-blue);}
+      .kpmg-meta{text-align:right;font-size:.72rem;color:var(--grey-500);}
+      .pathway-header-card{background:var(--kpmg-blue);border-radius:6px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:14px;}
       .pathway-header-card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--white);flex:1;}
-      .pathway-ambition-card{background:var(--white);border:1px solid var(--grey-200);border-radius:6px;overflow:hidden;margin-bottom:16px;}
-      .pathway-amb-head{background:linear-gradient(135deg,var(--kpmg-blue),var(--kpmg-blue-mid));padding:18px 22px;}
-      .pathway-amb-head .eyebrow{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:5px;}
-      .pathway-amb-head h3{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--white);margin-bottom:4px;}
-      .pathway-amb-head p{font-size:.8rem;color:rgba(255,255,255,.6);line-height:1.5;}
-      .pathway-guardrails{display:flex;flex-wrap:wrap;gap:5px;padding:10px 22px;background:rgba(0,51,141,.03);border-bottom:1px solid var(--grey-100);}
-      .guardrail-tag{font-size:.68rem;color:var(--kpmg-blue);background:var(--kpmg-blue-pale);border-radius:20px;padding:2px 10px;}
-      .pathway-body{padding:16px 22px;}
-      .pathway-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-      .pathway-col{background:var(--grey-50);border:1px solid var(--grey-200);border-radius:4px;padding:13px;}
-      .pathway-col-head{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-500);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--grey-200);}
-      .pathway-item{display:flex;align-items:flex-start;gap:6px;font-size:.79rem;color:var(--grey-800);line-height:1.45;margin-bottom:7px;}
+      .pathway-header-card .pill{font-size:.68rem;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);border-radius:20px;padding:2px 10px;}
+      .pathway-ambition-card{background:var(--white);border:1px solid var(--grey-200);border-radius:6px;overflow:hidden;margin-bottom:16px;page-break-inside:avoid;}
+      .pathway-amb-head{background:linear-gradient(135deg,var(--kpmg-blue),var(--kpmg-blue-mid));padding:16px 20px;}
+      .pathway-amb-head .eyebrow{font-size:.6rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px;}
+      .pathway-amb-head h3{font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--white);margin-bottom:4px;}
+      .pathway-amb-head p{font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.5;}
+      .pathway-guardrails{display:flex;flex-wrap:wrap;gap:4px;padding:8px 20px;background:rgba(0,51,141,.03);border-bottom:1px solid var(--grey-100);}
+      .guardrail-tag{font-size:.66rem;color:var(--kpmg-blue);background:var(--kpmg-blue-pale);border-radius:20px;padding:2px 9px;}
+      .pathway-body{padding:14px 20px;}
+      .pathway-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+      .pathway-col{background:var(--grey-50);border:1px solid var(--grey-200);border-radius:4px;padding:12px;}
+      .pathway-col-head{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-500);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--grey-200);}
+      .pathway-item{display:flex;align-items:flex-start;gap:6px;font-size:.78rem;color:var(--grey-800);line-height:1.45;margin-bottom:6px;}
+      .pathway-item-arrow{color:var(--kpmg-teal-light);font-size:.68rem;margin-top:2px;flex-shrink:0;}
       .status-indicator{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
       .si-planned{background:var(--grey-400);}
       .si-progress{background:#F59E0B;}
       .si-complete{background:#22C55E;}
-      .pathway-item-arrow{color:var(--kpmg-teal-light);font-size:.7rem;margin-top:2px;flex-shrink:0;}
-      @media print{body{padding:16px;background:white;}}
+      .grogu-commentary-strip{background:rgba(0,51,141,.04);border:1px solid var(--kpmg-blue-pale);border-left:3px solid var(--kpmg-blue-light);border-radius:4px;padding:12px 14px;margin-bottom:8px;page-break-inside:avoid;}
+      .grogu-commentary-head{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--kpmg-blue-light);margin-bottom:6px;}
+      .grogu-commentary-text{font-size:.8rem;color:var(--grey-700);line-height:1.6;white-space:pre-wrap;}
+      .section-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--kpmg-blue);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--kpmg-blue-pale);}
+      @media print{body{padding:16px;} .pathway-ambition-card{page-break-inside:avoid;}}
+      .btn-icon{display:none;}
     </style></head><body>
+    <div class="kpmg-header">
+      <div><div class="kpmg-wordmark">KPMG</div><div style="font-family:'DM Serif Display',serif;font-size:.9rem;font-style:italic;color:var(--grey-600);margin-top:2px;">Ambition Coaching</div></div>
+      <div class="kpmg-meta"><div style="font-weight:600;color:var(--grey-700);">Ambition Pathway</div><div>${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div></div>
+    </div>
     ${content}
     <script>window.onload=()=>window.print();<\/script>
     </body></html>`);
