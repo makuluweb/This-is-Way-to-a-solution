@@ -728,7 +728,8 @@
         <button class="btn ghost small" onclick="exportJSON()">⬇ Backup</button>
         <button class="btn ghost small" onclick="document.getElementById('import-input').click()">⬆ Restore</button>
         <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(event)">
-        <button class="btn accent-btn small" onclick="exportPDF()">⎙ Export</button>
+        <button class="btn ghost small" onclick="exportWord()">⬇ Word</button>
+        <button class="btn accent-btn small" onclick="exportPDF()">⎙ PDF</button>
       </div>
       <div id="profile-section" onclick="openProfileModal()">
         <div class="profile-info">
@@ -885,7 +886,10 @@
   <div id="tab-summary" class="tab-content">
     <div class="summary-header">
       <h2>Your Ambition Pathway</h2>
-      <button class="btn accent-btn small" onclick="exportPDF()">⎙ Export PDF</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn ghost small" onclick="exportWord()">⬇ Word</button>
+        <button class="btn accent-btn small" onclick="exportPDF()">⎙ Export PDF</button>
+      </div>
     </div>
     <div id="summary-content"></div>
   </div>
@@ -1532,22 +1536,36 @@ function saveGrogu(step, saveAs) {
   }
 }
 
+// Pending picker state — never embed AI text in onclick attributes
+let _pendingPickerText = '';
+let _pendingPickerSaveAs = '';
+
 function showAmbPicker(text, saveAs) {
+  _pendingPickerText = text;
+  _pendingPickerSaveAs = saveAs;
   const opts = state.ambitions.map((a,i) => `<option value="${a.id}">Ambition ${i+1}: ${(a.title||'Untitled').substring(0,40)}</option>`).join('');
   const el = document.createElement('div');
+  el.id = 'ac-picker-overlay';
   el.className = 'modal-overlay open';
   el.innerHTML = `<div class="modal" style="max-width:420px;">
     <h2>Link to which Ambition?</h2>
     <div class="field"><select id="amb-pick-ac" style="width:100%;padding:10px;border:1.5px solid var(--pale);border-radius:3px;font-family:'DM Sans',sans-serif;">${opts}</select></div>
     <div class="modal-actions">
-      <button class="btn ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
-      <button class="btn" onclick="confirmAmbPickAC('${saveAs}','${escA(text)}',this)">Save</button>
+      <button class="btn ghost" onclick="closeAcPicker()">Cancel</button>
+      <button class="btn" onclick="confirmAmbPickAC()">Save</button>
     </div></div>`;
   document.body.appendChild(el);
 }
 
-function confirmAmbPickAC(saveAs, text, btn) {
+function closeAcPicker() {
+  const el = document.getElementById('ac-picker-overlay');
+  if (el) el.remove();
+}
+
+function confirmAmbPickAC() {
   const ambId = document.getElementById('amb-pick-ac').value;
+  const text = _pendingPickerText;
+  const saveAs = _pendingPickerSaveAs;
   if (saveAs === 'guardrail') {
     const a = state.ambitions.find(x => x.id === ambId);
     if (a) { a.guardrail = a.guardrail ? a.guardrail + ' | ' + text : text; save(); renderAmbitions(); }
@@ -1556,32 +1574,35 @@ function confirmAmbPickAC(saveAs, text, btn) {
     state.intentions.push({ id: Date.now().toString(), ambitionId: ambId, text });
     save(); showToast('✅ Saved as Intention.');
   }
-  btn.closest('.modal-overlay').remove();
+  closeAcPicker();
 }
 
 function showIntPicker(text) {
+  _pendingPickerText = text;
   const opts = state.intentions.map((int, i) => {
     const a = state.ambitions.find(a => a.id === int.ambitionId);
     return `<option value="${int.id}">${a ? (a.title||'Untitled').substring(0,24) + ' › ' : ''}${(int.text||'Untitled').substring(0,36)}</option>`;
   }).join('');
   const el = document.createElement('div');
+  el.id = 'ac-picker-overlay';
   el.className = 'modal-overlay open';
   el.innerHTML = `<div class="modal" style="max-width:440px;">
     <h2>Link Action to which Intention?</h2>
     <div class="field"><select id="int-pick-ac" style="width:100%;padding:10px;border:1.5px solid var(--pale);border-radius:3px;font-family:'DM Sans',sans-serif;">${opts}</select></div>
     <div class="modal-actions">
-      <button class="btn ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
-      <button class="btn" onclick="confirmIntPickAC('${escA(text)}',this)">Save</button>
+      <button class="btn ghost" onclick="closeAcPicker()">Cancel</button>
+      <button class="btn" onclick="confirmIntPickAC()">Save</button>
     </div></div>`;
   document.body.appendChild(el);
 }
 
-function confirmIntPickAC(text, btn) {
+function confirmIntPickAC() {
   const iid = document.getElementById('int-pick-ac').value;
   const intent = state.intentions.find(i => i.id === iid);
+  const text = _pendingPickerText;
   state.actions.push({ id: Date.now().toString(), intentionId: iid, ambitionId: intent ? intent.ambitionId : '', text });
   save(); showToast('✅ Saved as Action.');
-  btn.closest('.modal-overlay').remove();
+  closeAcPicker();
 }
 
 function removeGroguCommentary(id) {
@@ -1632,6 +1653,120 @@ function importJSON(e) {
     } catch { alert('Could not read backup file.'); }
   };
   reader.readAsText(file);
+}
+
+function exportWord() {
+  showToast('⏳ Building Word document…');
+  function buildAndDownload() {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+            BorderStyle, WidthType, ShadingType, PageBreak } = window.docx;
+    const W = 9360;
+    const PRIMARY = '00338D';
+    const ACCENT  = '0091DA';
+    const GREY    = '424242';
+    const GREYMID = '9E9E9E';
+    const GREYLT  = 'EEEEEE';
+    const DATE    = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const NAME    = state.profile.name || 'Ambition Pathway';
+    const ROLE    = [state.profile.role, state.profile.org].filter(Boolean).join(' · ');
+
+    const nb = { style:BorderStyle.NONE, size:0, color:'FFFFFF' };
+    const noBorders = { top:nb, bottom:nb, left:nb, right:nb };
+    const cb = { style:BorderStyle.SINGLE, size:1, color:GREYLT };
+    const cellBorders = { top:cb, bottom:cb, left:cb, right:cb };
+
+    const p = (children, opts={}) => new Paragraph({ children, ...opts });
+    const t = (text, opts={}) => new TextRun({ text:text||'', font:'Arial', ...opts });
+
+    const children = [];
+
+    // Header
+    children.push(p([t('Ambition Coach', { bold:true, size:36, color:PRIMARY })], { spacing:{after:60} }));
+    children.push(p([t('Ambition Pathway', { size:22, color:GREYMID, italics:true })], { spacing:{after:40} }));
+    children.push(p([], { border:{bottom:{style:BorderStyle.SINGLE,size:12,color:PRIMARY,space:1}}, spacing:{after:240} }));
+
+    // Profile
+    children.push(p([t(NAME, { bold:true, size:32, color:PRIMARY })], { spacing:{after:60} }));
+    if (ROLE) children.push(p([t(ROLE, { size:20, color:GREYMID })], { spacing:{after:60} }));
+    children.push(p([t(DATE, { size:18, color:GREYMID })], { spacing:{after:400} }));
+
+    state.ambitions.forEach((a, ai) => {
+      children.push(p([t(`AMBITION ${String(ai+1).padStart(2,'0')}`, { size:16, color:ACCENT, bold:true })], { spacing:{before:200,after:80} }));
+      children.push(p([t(a.title||'Untitled Ambition', { bold:true, size:28, color:PRIMARY })], { spacing:{after:120} }));
+      if (a.body) children.push(p([t(a.body, { size:20, color:GREY })], { spacing:{after:140} }));
+      if (a.guardrail) children.push(p([t('\u26A1  Guardrail: '+a.guardrail, { size:18, color:GREY })], { spacing:{after:80} }));
+
+      const intents = state.intentions.filter(i => i.ambitionId === a.id);
+      if (intents.length) {
+        children.push(p([], { border:{bottom:{style:BorderStyle.SINGLE,size:4,color:GREYLT,space:1}}, spacing:{before:160,after:160} }));
+        intents.forEach((intent, ii) => {
+          children.push(p([t(`INTENTION ${String(ii+1).padStart(2,'0')}`, { size:16, color:ACCENT, bold:true })], { spacing:{before:120,after:60} }));
+          children.push(p([t(intent.text||'\u2014', { size:22, color:GREY, italics:true })], { spacing:{after:120} }));
+
+          const acts = state.actions.filter(x => x.intentionId === intent.id);
+          if (acts.length) {
+            const mkHdr = (text, w) => new TableCell({ width:{size:w,type:WidthType.DXA}, shading:{fill:PRIMARY,type:ShadingType.CLEAR}, borders:noBorders, margins:{top:80,bottom:80,left:120,right:120},
+              children:[p([t(text,{bold:true,size:18,color:'FFFFFF'})])] });
+            const mkCell = (text, w, shade) => new TableCell({ width:{size:w,type:WidthType.DXA}, shading:{fill:shade,type:ShadingType.CLEAR}, borders:cellBorders, margins:{top:80,bottom:80,left:120,right:120},
+              children:[p([t(text||'\u2014',{size:18,color:GREY})])] });
+            children.push(new Table({
+              width:{size:W,type:WidthType.DXA}, columnWidths:[3600,3160,2600],
+              rows:[
+                new TableRow({ tableHeader:true, children:[ mkHdr('Action',3600), mkHdr('Description / Outcome',3160), mkHdr('Status',2600) ] }),
+                ...acts.map((act,idx) => {
+                  const s = idx%2===0?'F5F5F5':'FFFFFF';
+                  const desc = [act.text, act.description, act.outcome].filter(Boolean).join(' — ');
+                  const status = { planned:'Planned', inprogress:'In Progress', complete:'Complete' }[act.status] || act.status || '';
+                  return new TableRow({ children:[ mkCell(act.title||act.text,3600,s), mkCell(desc,3160,s), mkCell(status,2600,s) ] });
+                })
+              ]
+            }));
+            children.push(p([], { spacing:{after:120} }));
+          }
+        });
+      }
+      if (ai < state.ambitions.length - 1) {
+        children.push(p([new PageBreak()], { spacing:{after:0} }));
+      }
+    });
+
+    // Grogu Commentary
+    const commentary = state.groguCommentary||[];
+    if (commentary.length) {
+      children.push(p([new PageBreak()], { spacing:{after:0} }));
+      children.push(p([t('\uD83D\uDC38  Grogu Commentary', { bold:true, size:28, color:PRIMARY })], { spacing:{before:200,after:80} }));
+      children.push(p([], { border:{bottom:{style:BorderStyle.SINGLE,size:6,color:ACCENT,space:1}}, spacing:{after:200} }));
+      const stepLabels = { ambition:'Ambitions', intention:'Intentions', action:'Actions' };
+      commentary.forEach(entry => {
+        const date = new Date(entry.savedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+        children.push(p([t(`${stepLabels[entry.step]||entry.step}  \u00B7  ${date}`, { size:16, color:GREYMID, bold:true })], { spacing:{before:160,after:80} }));
+        entry.text.split('\n').forEach(line => {
+          children.push(p([t(line||' ', { size:20, color:GREY })], { spacing:{after:60}, indent:{left:360} }));
+        });
+        children.push(p([], { border:{bottom:{style:BorderStyle.SINGLE,size:2,color:GREYLT,space:1}}, spacing:{before:80,after:80} }));
+      });
+    }
+
+    const doc = new Document({
+      styles:{ default:{ document:{ run:{ font:'Arial', size:22 } } } },
+      sections:[{ properties:{ page:{ size:{width:12240,height:15840}, margin:{top:1440,right:1440,bottom:1440,left:1440} } }, children }]
+    });
+
+    Packer.toBlob(doc).then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ambition-pathway-${new Date().toISOString().slice(0,10)}.docx`;
+      a.click();
+      showToast('✅ Word document downloaded.');
+    }).catch(e => showToast('⚠ Word export failed: ' + e.message));
+  }
+
+  if (window.docx) { buildAndDownload(); return; }
+  const script = document.createElement('script');
+  script.src = 'https://unpkg.com/docx@9.6.1/dist/index.umd.cjs';
+  script.onload = buildAndDownload;
+  script.onerror = () => showToast('⚠ Could not load Word library. Check your internet connection.');
+  document.head.appendChild(script);
 }
 
 function exportPDF() {
