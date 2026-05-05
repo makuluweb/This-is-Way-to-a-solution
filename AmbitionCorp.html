@@ -721,6 +721,10 @@
     </div>
     <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
       <div class="toolbar" style="margin:0;">
+        <div id="key-status-dot" style="display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--moss);font-weight:600;padding:0 4px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--moss);display:inline-block;"></span> Key active
+        </div>
+        <button class="btn ghost small" onclick="changeApiKey()">🔑 Key</button>
         <button class="btn ghost small" onclick="exportJSON()">⬇ Backup</button>
         <button class="btn ghost small" onclick="document.getElementById('import-input').click()">⬆ Restore</button>
         <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(event)">
@@ -888,6 +892,29 @@
 
 </div><!-- /app -->
 
+<!-- ── KEY MODAL ── -->
+<div class="modal-overlay" id="key-modal">
+  <div class="modal">
+    <h2>🔑 API Key</h2>
+    <div class="field">
+      <label>Anthropic API Key</label>
+      <div style="position:relative;">
+        <input type="password" id="key-modal-input" placeholder="sk-ant-api03-…" autocomplete="off"
+          style="width:100%;padding:10px 40px 10px 14px;border:1.5px solid var(--pale);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;"
+          onkeydown="if(event.key==='Enter')saveNewKey()">
+        <button onclick="(()=>{const i=document.getElementById('key-modal-input');i.type=i.type==='password'?'text':'password';})()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mid);font-size:1rem;">👁</button>
+      </div>
+      <div id="key-modal-error" style="display:none;color:#dc2626;font-size:.72rem;margin-top:5px;"></div>
+      <div style="font-size:.72rem;color:var(--mid);margin-top:6px;">Key starts with <code style="color:var(--accent);">sk-ant-</code> — find it at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--accent);">console.anthropic.com</a></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost small" onclick="clearAndReauth()" style="color:#dc2626;border-color:#fecaca;margin-right:auto;">Remove Key</button>
+      <button class="btn ghost" onclick="closeKeyModal()">Cancel</button>
+      <button class="btn" onclick="saveNewKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── PROFILE MODAL ── -->
 <div class="modal-overlay" id="profile-modal">
   <div class="modal">
@@ -923,6 +950,8 @@
 // ────────────────────────────────────────────────
 // STATE
 // ────────────────────────────────────────────────
+let API_KEY = '';
+
 let state = {
   profile: { name: '', role: '', org: '', avatar: '' },
   ambitions: [],
@@ -942,6 +971,11 @@ function init() {
     try { state = JSON.parse(saved); } catch(e) {}
   }
   if (!state.groguCommentary) state.groguCommentary = [];
+
+  // Load saved API key
+  const savedKey = localStorage.getItem('ambition-coach-key');
+  if (savedKey) API_KEY = savedKey;
+
   renderProfile();
   renderAmbitions();
   renderIntentions();
@@ -951,6 +985,46 @@ function init() {
 
 function save() {
   localStorage.setItem('ambition-coach-v1', JSON.stringify(state));
+}
+
+// ────────────────────────────────────────────────
+// API KEY MANAGEMENT
+// ────────────────────────────────────────────────
+function changeApiKey() {
+  document.getElementById('key-modal').classList.add('open');
+  const inp = document.getElementById('key-modal-input');
+  inp.value = ''; inp.type = 'password';
+  document.getElementById('key-modal-error').style.display = 'none';
+}
+
+function closeKeyModal() {
+  document.getElementById('key-modal').classList.remove('open');
+}
+
+function saveNewKey() {
+  const key = document.getElementById('key-modal-input').value.trim();
+  const errEl = document.getElementById('key-modal-error');
+  if (!key || !key.startsWith('sk-ant-')) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Key must begin with sk-ant-';
+    return;
+  }
+  API_KEY = key;
+  localStorage.setItem('ambition-coach-key', key);
+  closeKeyModal();
+  // Show key indicator
+  const keyDot = document.getElementById('key-status-dot');
+  if (keyDot) keyDot.style.display = 'flex';
+  showToast('✅ API key updated — Ask Grogu is ready.');
+}
+
+function clearAndReauth() {
+  localStorage.removeItem('ambition-coach-key');
+  API_KEY = '';
+  closeKeyModal();
+  const keyDot = document.getElementById('key-status-dot');
+  if (keyDot) keyDot.style.display = 'none';
+  showToast('🔑 API key removed.');
 }
 
 // ────────────────────────────────────────────────
@@ -1387,7 +1461,7 @@ async function aiChallenge(type, mode) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': state.apiKey || '',
+        'x-api-key': API_KEY,
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
@@ -1399,7 +1473,15 @@ async function aiChallenge(type, mode) {
       })
     });
     const data = await res.json();
-    const text = data.content?.find(b => b.type === 'text')?.text || data.error?.message || 'No response received.';
+
+    if (data.error) {
+      responseEl.style.display = 'block';
+      const isAuth = res.status === 401 || data.error.type === 'authentication_error';
+      responseEl.innerHTML = `<span style="color:#ef4444;font-weight:600;">⚠ ${data.error.message || 'API error'}</span>${isAuth ? `<br><br><button onclick="changeApiKey()" style="margin-top:6px;padding:6px 14px;background:var(--ink);border:none;border-radius:3px;color:white;font-size:.78rem;cursor:pointer;">🔑 Change API Key</button>` : ''}`;
+      return;
+    }
+
+    const text = data.content?.find(b => b.type === 'text')?.text || 'No response received.';
     responseEl.style.display = 'block';
     responseEl.textContent = text;
     responseEl.dataset.lastResponse = text;
@@ -1408,7 +1490,7 @@ async function aiChallenge(type, mode) {
     if (saveRow) saveRow.style.display = 'flex';
   } catch (e) {
     responseEl.style.display = 'block';
-    responseEl.textContent = 'Unable to reach Grogu. Please check your connection and try again.';
+    responseEl.innerHTML = `<span style="color:#ef4444;font-weight:600;">⚠ Could not reach Anthropic API. Check your internet connection.</span>`;
   }
 }
 
