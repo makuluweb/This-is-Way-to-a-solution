@@ -1246,7 +1246,8 @@ body{
       <button class="top-btn" onclick="exportJSON()">↓ Backup</button>
       <button class="top-btn" onclick="document.getElementById('import-file').click()">↑ Restore</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
-      <button class="top-btn" onclick="exportPDF()">⎙ Export</button>
+      <button class="top-btn" onclick="exportWord()">⬇ Word</button>
+      <button class="top-btn" onclick="exportPDF()">⎙ PDF</button>
       <div class="profile-btn" onclick="openProfile()">
         <div class="profile-avatar" id="avatar-top">?</div>
         <span class="profile-name-chip" id="top-name">Profile</span>
@@ -1395,7 +1396,10 @@ body{
           <div class="section-eyebrow">Strategic Summary</div>
           <div class="section-title" style="margin-bottom:0;">Ambition Pathway</div>
         </div>
-        <button class="btn-primary" onclick="exportPDF()">⎙ Export to PDF</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-secondary" onclick="exportWord()" style="font-size:.78rem;padding:8px 16px;">⬇ Word</button>
+          <button class="btn-primary" onclick="exportPDF()">⎙ Export PDF</button>
+        </div>
       </div>
       <div style="height:1px;background:var(--grey-200);margin-bottom:28px;"></div>
 
@@ -1724,7 +1728,11 @@ function renderIntentions() {
       </div>
       <div class="k-card-body collapsible">
         <div id="int-list-${a.id}">${rowsHtml}</div>
-        <button class="btn-ghost" onclick="addIntention('${a.id}')">+ Add Intention</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+          <button class="btn-ghost" style="flex:1;min-width:160px;" onclick="addIntention('${a.id}')">+ Add Intention</button>
+          <button class="btn-ghost" style="flex:1;min-width:160px;border-color:var(--kpmg-blue-light);color:var(--kpmg-blue-light);" onclick="suggestIntentions('${a.id}')">🐸 Suggest Intentions</button>
+        </div>
+        <div id="suggest-int-panel-${a.id}" style="display:none;"></div>
       </div>`;
     c.appendChild(card);
     autoResize(card);
@@ -1841,13 +1849,150 @@ function renderActions() {
         </div>
         <div class="k-card-body collapsible">
           <div id="acts-${intent.id}">${actHtml}</div>
-          <button class="btn-ghost" onclick="addAction('${intent.id}')">+ Add Action</button>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+            <button class="btn-ghost" style="flex:1;min-width:160px;" onclick="addAction('${intent.id}')">+ Add Action</button>
+            <button class="btn-ghost" style="flex:1;min-width:160px;border-color:var(--kpmg-violet);color:var(--kpmg-violet);" onclick="suggestActions('${intent.id}','${a.id}')">🐸 Suggest Actions</button>
+          </div>
+          <div id="suggest-act-panel-${intent.id}" style="display:none;"></div>
         </div>`;
       wrap.appendChild(icard);
       autoResize(icard);
     });
     c.appendChild(wrap);
   });
+}
+
+/* ═══════════════════════════════════════════
+   GROGU SUGGESTIONS — PER AMBITION / INTENTION
+═══════════════════════════════════════════ */
+let _suggestPending = {}; // { ambitionId, intentionId, suggestions[] }
+
+async function suggestIntentions(ambitionId) {
+  const panel = document.getElementById('suggest-int-panel-' + ambitionId);
+  if (!panel) return;
+  const a = state.ambitions.find(x => x.id === ambitionId);
+  if (!a) return;
+
+  panel.style.display = 'block';
+  panel.innerHTML = `<div style="margin-top:14px;padding:14px;background:var(--kpmg-blue-ultra);border:1px solid var(--kpmg-blue-pale);border-radius:4px;">
+    <div style="display:flex;align-items:center;gap:8px;color:var(--kpmg-blue);font-size:.78rem;font-weight:600;">
+      <div class="dot" style="background:var(--kpmg-blue-light);"></div>
+      <div class="dot" style="background:var(--kpmg-blue-light);"></div>
+      <div class="dot" style="background:var(--kpmg-blue-light);"></div>
+      <span>Grogu is thinking…</span>
+    </div>
+  </div>`;
+
+  const existing = state.intentions.filter(i => i.ambitionId === ambitionId).map(i => `- ${i.text}`).join('\n') || 'none yet';
+  const prompt = `You are an executive coach. For the ambition below, suggest exactly 3 distinct intentional behaviours or mindset shifts that would drive success. Each should be specific, observable, and actionable. Return ONLY a JSON array of 3 strings, no other text, no markdown, no explanation.\n\nAmbition: "${a.title}"\nContext: ${a.context||'not provided'}\nGuardrails: ${a.guardrails.filter(Boolean).join(', ')||'none'}\nExisting intentions: ${existing}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-api-key':API_KEY, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+      body: JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:600, messages:[{ role:'user', content:prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) { panel.innerHTML = `<div style="color:#DC2626;font-size:.8rem;padding:10px;">${data.error.message}</div>`; return; }
+    const raw = data.content?.find(b=>b.type==='text')?.text || '[]';
+    let suggestions;
+    try { suggestions = JSON.parse(raw.replace(/```json|```/g,'').trim()); } catch { suggestions = [raw]; }
+    _suggestPending[ambitionId] = { suggestions, type: 'intention', ambitionId };
+    renderSuggestionPanel(panel, suggestions, ambitionId, 'intention');
+  } catch(e) {
+    panel.innerHTML = `<div style="color:#DC2626;font-size:.8rem;padding:10px;">Could not reach Grogu — check your connection.</div>`;
+  }
+}
+
+async function suggestActions(intentionId, ambitionId) {
+  const panel = document.getElementById('suggest-act-panel-' + intentionId);
+  if (!panel) return;
+  const a = state.ambitions.find(x => x.id === ambitionId);
+  const intent = state.intentions.find(x => x.id === intentionId);
+  if (!intent) return;
+
+  panel.style.display = 'block';
+  panel.innerHTML = `<div style="margin-top:14px;padding:14px;background:var(--grey-50);border:1px solid var(--grey-200);border-radius:4px;border-left:3px solid var(--kpmg-violet);">
+    <div style="display:flex;align-items:center;gap:8px;color:var(--kpmg-violet);font-size:.78rem;font-weight:600;">
+      <div class="dot" style="background:var(--kpmg-violet);"></div>
+      <div class="dot" style="background:var(--kpmg-violet);"></div>
+      <div class="dot" style="background:var(--kpmg-violet);"></div>
+      <span>Grogu is thinking…</span>
+    </div>
+  </div>`;
+
+  const existing = state.actions.filter(x => x.intentionId === intentionId).map(x => `- ${x.title}`).join('\n') || 'none yet';
+  const prompt = `You are an executive coach. Suggest exactly 3 specific, concrete actions to deliver on this intention. Each action should be a short, clear title (max 10 words). Return ONLY a JSON array of 3 strings, no other text.\n\nAmbition: "${a?.title||''}"\nIntention: "${intent.text}"\nExisting actions: ${existing}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-api-key':API_KEY, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+      body: JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:400, messages:[{ role:'user', content:prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) { panel.innerHTML = `<div style="color:#DC2626;font-size:.8rem;padding:10px;">${data.error.message}</div>`; return; }
+    const raw = data.content?.find(b=>b.type==='text')?.text || '[]';
+    let suggestions;
+    try { suggestions = JSON.parse(raw.replace(/```json|```/g,'').trim()); } catch { suggestions = [raw]; }
+    _suggestPending[intentionId] = { suggestions, type: 'action', intentionId, ambitionId };
+    renderSuggestionPanel(panel, suggestions, intentionId, 'action');
+  } catch(e) {
+    panel.innerHTML = `<div style="color:#DC2626;font-size:.8rem;padding:10px;">Could not reach Grogu — check your connection.</div>`;
+  }
+}
+
+function renderSuggestionPanel(panel, suggestions, id, type) {
+  const isAction = type === 'action';
+  const accent = isAction ? 'var(--kpmg-violet)' : 'var(--kpmg-blue-light)';
+  const bgColor = isAction ? 'var(--grey-50)' : 'var(--kpmg-blue-ultra)';
+  const borderColor = isAction ? 'var(--grey-200)' : 'var(--kpmg-blue-pale)';
+  const items = suggestions.map((s, i) => `
+    <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:white;border:1.5px solid ${borderColor};border-radius:4px;cursor:pointer;margin-bottom:8px;transition:border-color .15s;"
+      onmouseover="this.style.borderColor='${accent}'" onmouseout="this.style.borderColor='${borderColor}'">
+      <input type="checkbox" id="sug-${id}-${i}" style="margin-top:3px;accent-color:${accent};flex-shrink:0;">
+      <span style="font-size:.85rem;color:var(--grey-800);line-height:1.5;">${esc(s)}</span>
+    </label>`).join('');
+
+  panel.innerHTML = `
+    <div style="margin-top:14px;padding:16px;background:${bgColor};border:1px solid ${borderColor};border-radius:6px;border-left:3px solid ${accent};">
+      <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${accent};margin-bottom:12px;">🐸 Grogu Suggests — select to add</div>
+      ${items}
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end;">
+        <button class="btn-secondary" style="padding:7px 16px;font-size:.78rem;" onclick="dismissSuggestions('${id}','${type}')">Dismiss</button>
+        <button class="btn-primary" style="padding:7px 16px;font-size:.78rem;background:${accent};border-color:${accent};" onclick="addSelectedSuggestions('${id}','${type}')">Add Selected</button>
+      </div>
+    </div>`;
+}
+
+function addSelectedSuggestions(id, type) {
+  const data = _suggestPending[id];
+  if (!data) return;
+  let added = 0;
+  data.suggestions.forEach((s, i) => {
+    const cb = document.getElementById(`sug-${id}-${i}`);
+    if (cb && cb.checked) {
+      if (type === 'intention') {
+        state.intentions.push({ id: 'i' + Date.now() + i, ambitionId: data.ambitionId, text: s });
+      } else {
+        state.actions.push({ id: 'ac' + Date.now() + i, intentionId: data.intentionId, ambitionId: data.ambitionId, title: s, description: '', outcome: '', startDate: '', endDate: '', status: 'planned' });
+      }
+      added++;
+    }
+  });
+  if (added === 0) { showToast('Select at least one suggestion to add.'); return; }
+  save();
+  delete _suggestPending[id];
+  showToast(`✅ Added ${added} ${type}${added > 1 ? 's' : ''}.`);
+  if (type === 'intention') { renderIntentions(); renderAmbitions(); }
+  else { renderActions(); }
+}
+
+function dismissSuggestions(id, type) {
+  delete _suggestPending[id];
+  const panelId = type === 'intention' ? 'suggest-int-panel-' + id : 'suggest-act-panel-' + id;
+  const panel = document.getElementById(panelId);
+  if (panel) panel.style.display = 'none';
 }
 
 /* ═══════════════════════════════════════════
@@ -2114,27 +2259,39 @@ function saveGroguResponse(step, saveAs) {
   }
 }
 
+// Pending picker text — avoids embedding AI text in onclick attributes
+let _pendingPickerText = '';
+let _pendingPickerSaveAs = '';
+
 function showAmbitionPicker(text, saveAs) {
+  _pendingPickerText = text;
+  _pendingPickerSaveAs = saveAs;
   const opts = state.ambitions.map((a, i) =>
     `<option value="${a.id}">Ambition ${i+1}: ${(a.title||'Untitled').substring(0,40)}</option>`
   ).join('');
   const sel = document.createElement('div');
+  sel.id = 'picker-overlay';
   sel.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center;';
   sel.innerHTML = `<div style="background:var(--white);border-radius:8px;padding:28px;width:min(420px,92vw);box-shadow:0 8px 32px rgba(0,0,0,.2);">
     <div style="font-weight:700;color:var(--kpmg-blue);margin-bottom:16px;font-size:1rem;">Link to which Ambition?</div>
     <select id="picker-sel" class="k-input" style="margin-bottom:16px;">${opts}</select>
     <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button class="btn-secondary" onclick="this.closest('div[style]').remove()">Cancel</button>
-      <button class="btn-primary" onclick="confirmAmbitionPick('${saveAs}','${escAttr(text)}',this)">Save</button>
+      <button class="btn-secondary" onclick="closePicker()">Cancel</button>
+      <button class="btn-primary" onclick="confirmAmbitionPick()">Save</button>
     </div>
   </div>`;
   document.body.appendChild(sel);
 }
 
-function confirmAmbitionPick(saveAs, text, btn) {
-  const aid = document.getElementById('picker-sel').value;
-  const realText = btn.closest('div[style]').querySelector('select').value;
+function closePicker() {
+  const el = document.getElementById('picker-overlay');
+  if (el) el.remove();
+}
+
+function confirmAmbitionPick() {
   const ambId = document.getElementById('picker-sel').value;
+  const text = _pendingPickerText;
+  const saveAs = _pendingPickerSaveAs;
   if (saveAs === 'guardrail') {
     const a = state.ambitions.find(x => x.id === ambId);
     if (a) { a.guardrails.push(text); save(); renderAmbitions(); }
@@ -2145,32 +2302,35 @@ function confirmAmbitionPick(saveAs, text, btn) {
     save();
     showToast('✅ Saved as Intention.');
   }
-  btn.closest('[style*="position:fixed"]').remove();
+  closePicker();
 }
 
 function showIntentionPicker(text) {
+  _pendingPickerText = text;
   const opts = state.intentions.map((int, i) => {
     const a = state.ambitions.find(a => a.id === int.ambitionId);
     const label = `${a ? (a.title||'Untitled').substring(0,30) + ' › ' : ''}${(int.text||'Untitled').substring(0,40)}`;
     return `<option value="${int.id}">${label}</option>`;
   }).join('');
   const sel = document.createElement('div');
+  sel.id = 'picker-overlay';
   sel.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center;';
   sel.innerHTML = `<div style="background:var(--white);border-radius:8px;padding:28px;width:min(440px,92vw);box-shadow:0 8px 32px rgba(0,0,0,.2);">
     <div style="font-weight:700;color:var(--kpmg-blue);margin-bottom:16px;font-size:1rem;">Link Action to which Intention?</div>
     <select id="int-picker-sel" class="k-input" style="margin-bottom:16px;">${opts}</select>
     <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button class="btn-secondary" onclick="this.closest('[style*=fixed]').remove()">Cancel</button>
-      <button class="btn-primary" onclick="confirmIntentionPick('${escAttr(text)}',this)">Save</button>
+      <button class="btn-secondary" onclick="closePicker()">Cancel</button>
+      <button class="btn-primary" onclick="confirmIntentionPick()">Save</button>
     </div>
   </div>`;
   document.body.appendChild(sel);
 }
 
-function confirmIntentionPick(text, btn) {
+function confirmIntentionPick() {
   const iid = document.getElementById('int-picker-sel').value;
   const intent = state.intentions.find(i => i.id === iid);
   const id = 'ac' + Date.now();
+  const text = _pendingPickerText;
   state.actions.push({
     id, intentionId: iid,
     ambitionId: intent ? intent.ambitionId : '',
@@ -2180,7 +2340,7 @@ function confirmIntentionPick(text, btn) {
   });
   save();
   showToast('✅ Saved as Action — visible in Step 03.');
-  btn.closest('[style*="position:fixed"]').remove();
+  closePicker();
 }
 
 function showToast(msg) {
@@ -2293,6 +2453,125 @@ function importJSON(e) {
     } catch { alert('Could not read file.'); }
   };
   r.readAsText(f);
+}
+
+function exportWord() {
+  showToast('⏳ Building Word document…');
+  function buildAndDownload() {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+            BorderStyle, WidthType, ShadingType, PageBreak } = window.docx;
+    const W = 9360;
+    const PRIMARY = '00338D';
+    const ACCENT  = '0091DA';
+    const GREY    = '424242';
+    const GREYMID = '9E9E9E';
+    const GREYLT  = 'EEEEEE';
+    const DATE    = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const NAME    = state.profile.name || 'Ambition Pathway';
+    const ROLE    = [state.profile.role, state.profile.org].filter(Boolean).join(' · ');
+
+    const nb = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+    const noBorders = { top: nb, bottom: nb, left: nb, right: nb };
+    const cb = { style: BorderStyle.SINGLE, size: 1, color: GREYLT };
+    const cellBorders = { top: cb, bottom: cb, left: cb, right: cb };
+
+    const p = (children, opts={}) => new Paragraph({ children, ...opts });
+    const t = (text, opts={}) => new TextRun({ text: text||'', font:'Arial', ...opts });
+
+    const children = [];
+
+    // Header
+    children.push(p([t('KPMG', { bold:true, size:36, color:PRIMARY })], { spacing:{after:60} }));
+    children.push(p([t('Ambition Coaching', { size:22, color:GREYMID, italics:true })], { spacing:{after:40} }));
+    children.push(p([], { border:{bottom:{style:BorderStyle.SINGLE,size:12,color:PRIMARY,space:1}}, spacing:{after:240} }));
+
+    // Profile
+    children.push(p([t(NAME, { bold:true, size:32, color:PRIMARY })], { spacing:{after:60} }));
+    if (ROLE) children.push(p([t(ROLE, { size:20, color:GREYMID })], { spacing:{after:60} }));
+    children.push(p([t(DATE, { size:18, color:GREYMID })], { spacing:{after:400} }));
+
+    // Ambitions
+    state.ambitions.forEach((a, ai) => {
+      children.push(p([t(`AMBITION ${String(ai+1).padStart(2,'0')}`, { size:16, color:ACCENT, bold:true })], { spacing:{before:200,after:80} }));
+      children.push(p([t(a.title||'Untitled Ambition', { bold:true, size:28, color:PRIMARY })], { spacing:{after:120} }));
+      if (a.context) children.push(p([t(a.context, { size:20, color:GREY })], { spacing:{after:140} }));
+
+      const grList = (a.guardrails||[]).filter(Boolean);
+      if (grList.length) {
+        children.push(p([t('Guardrails', { bold:true, size:18, color:PRIMARY })], { spacing:{before:80,after:60} }));
+        grList.forEach(g => children.push(p([t('\u26A1  '+g, { size:18, color:GREY })], { spacing:{after:40} })));
+      }
+
+      const intents = state.intentions.filter(i => i.ambitionId === a.id);
+      if (intents.length) {
+        children.push(p([], { border:{bottom:{style:BorderStyle.SINGLE,size:4,color:GREYLT,space:1}}, spacing:{before:160,after:160} }));
+        intents.forEach((intent, ii) => {
+          children.push(p([t(`INTENTION ${String(ii+1).padStart(2,'0')}`, { size:16, color:ACCENT, bold:true })], { spacing:{before:120,after:60} }));
+          children.push(p([t(intent.text||'\u2014', { size:22, color:GREY, italics:true })], { spacing:{after:120} }));
+
+          const acts = state.actions.filter(x => x.intentionId === intent.id);
+          if (acts.length) {
+            const mkHdr = (text, w) => new TableCell({ width:{size:w,type:WidthType.DXA}, shading:{fill:PRIMARY,type:ShadingType.CLEAR}, borders:noBorders, margins:{top:80,bottom:80,left:120,right:120},
+              children:[p([t(text,{bold:true,size:18,color:'FFFFFF'})])] });
+            const mkCell = (text, w, shade) => new TableCell({ width:{size:w,type:WidthType.DXA}, shading:{fill:shade,type:ShadingType.CLEAR}, borders:cellBorders, margins:{top:80,bottom:80,left:120,right:120},
+              children:[p([t(text||'\u2014',{size:18,color:GREY})])] });
+            const statusMap = { planned:'Planned', inprogress:'In Progress', complete:'Complete' };
+            children.push(new Table({
+              width:{size:W,type:WidthType.DXA}, columnWidths:[2800,2480,1360,1360,1360],
+              rows:[
+                new TableRow({ tableHeader:true, children:[ mkHdr('Action',2800), mkHdr('Outcome',2480), mkHdr('Start',1360), mkHdr('End',1360), mkHdr('Status',1360) ] }),
+                ...acts.map((act,idx) => {
+                  const s = idx%2===0?'F5F5F5':'FFFFFF';
+                  return new TableRow({ children:[ mkCell(act.title,2800,s), mkCell(act.outcome,2480,s), mkCell(act.startDate,1360,s), mkCell(act.endDate,1360,s), mkCell(statusMap[act.status]||act.status,1360,s) ] });
+                })
+              ]
+            }));
+            children.push(p([], { spacing:{after:120} }));
+          }
+        });
+      }
+      if (ai < state.ambitions.length - 1) {
+        children.push(p([new PageBreak()], { spacing:{after:0} }));
+      }
+    });
+
+    // Grogu Commentary
+    const commentary = state.groguCommentary||[];
+    if (commentary.length) {
+      children.push(p([new PageBreak()], { spacing:{after:0} }));
+      children.push(p([t('\uD83D\uDC38  Grogu Commentary', { bold:true, size:28, color:PRIMARY })], { spacing:{before:200,after:80} }));
+      children.push(p([], { border:{bottom:{style:BorderStyle.SINGLE,size:6,color:ACCENT,space:1}}, spacing:{after:200} }));
+      const stepLabels = { ambition:'Ambitions', intention:'Intentions', action:'Actions' };
+      commentary.forEach(entry => {
+        const date = new Date(entry.savedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+        children.push(p([t(`${stepLabels[entry.step]||entry.step}  \u00B7  ${date}`, { size:16, color:GREYMID, bold:true })], { spacing:{before:160,after:80} }));
+        entry.text.split('\n').forEach(line => {
+          children.push(p([t(line||' ', { size:20, color:GREY })], { spacing:{after:60}, indent:{left:360} }));
+        });
+        children.push(p([], { border:{bottom:{style:BorderStyle.SINGLE,size:2,color:GREYLT,space:1}}, spacing:{before:80,after:80} }));
+      });
+    }
+
+    const doc = new Document({
+      styles:{ default:{ document:{ run:{ font:'Arial', size:22 } } } },
+      sections:[{ properties:{ page:{ size:{width:12240,height:15840}, margin:{top:1440,right:1440,bottom:1440,left:1440} } }, children }]
+    });
+
+    Packer.toBlob(doc).then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ambition-pathway-${new Date().toISOString().slice(0,10)}.docx`;
+      a.click();
+      showToast('✅ Word document downloaded.');
+    }).catch(e => showToast('⚠ Word export failed: ' + e.message));
+  }
+
+  if (window.docx) { buildAndDownload(); return; }
+  const script = document.createElement('script');
+  script.src = 'https://unpkg.com/docx@9.6.1/dist/index.umd.cjs';
+  script.onload = buildAndDownload;
+  script.onerror = () => showToast('⚠ Could not load Word library. Check your internet connection.');
+  document.head.appendChild(script);
 }
 
 function exportPDF() {
