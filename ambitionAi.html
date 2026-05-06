@@ -1248,6 +1248,7 @@ body{
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
       <button class="top-btn" onclick="exportWord()">⬇ Word</button>
       <button class="top-btn" onclick="exportPDF()">⎙ PDF</button>
+      <button class="top-btn" onclick="confirmReset()" style="opacity:.7;border-color:rgba(220,38,38,.4);color:rgba(220,38,38,.8);" title="Reset all ambition data">↺ Reset</button>
       <div class="profile-btn" onclick="openProfile()">
         <div class="profile-avatar" id="avatar-top">?</div>
         <span class="profile-name-chip" id="top-name">Profile</span>
@@ -2650,6 +2651,93 @@ function autoResize(parent) {
    BOOT
 ═══════════════════════════════════════════ */
 init();
+</script>
+
+<!-- ═══════════════════════════════════════════
+     RESET MODAL
+════════════════════════════════════════════ -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-head" style="background:linear-gradient(135deg,#7f1d1d,#991b1b);">
+      <h2>↺ Reset Ambition</h2>
+      <p>This will permanently clear all your ambitions, intentions, actions, and Grogu commentary.</p>
+    </div>
+    <div class="modal-body">
+      <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:4px;padding:14px 16px;margin-bottom:20px;">
+        <div style="font-size:.82rem;font-weight:600;color:#991B1B;margin-bottom:4px;">⚠ This cannot be undone</div>
+        <div style="font-size:.78rem;color:#7F1D1D;line-height:1.5;">Would you like to save your current work before resetting? You can back up as JSON, export to PDF, or export to Word.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn-secondary" onclick="resetAfterBackup()" style="justify-content:flex-start;gap:12px;padding:13px 16px;text-align:left;display:flex;align-items:center;">
+          <span style="font-size:1.2rem;flex-shrink:0;">↓</span>
+          <div>
+            <div style="font-weight:600;font-size:.85rem;">Back up then reset</div>
+            <div style="font-size:.72rem;color:var(--grey-500);margin-top:1px;">Downloads a JSON backup, then clears all data</div>
+          </div>
+        </button>
+        <button class="btn-secondary" onclick="resetAfterPDF()" style="justify-content:flex-start;gap:12px;padding:13px 16px;text-align:left;display:flex;align-items:center;">
+          <span style="font-size:1.2rem;flex-shrink:0;">⎙</span>
+          <div>
+            <div style="font-weight:600;font-size:.85rem;">Export PDF then reset</div>
+            <div style="font-size:.72rem;color:var(--grey-500);margin-top:1px;">Opens print/PDF dialog, then clears all data</div>
+          </div>
+        </button>
+        <button class="btn-secondary" onclick="resetAfterWord()" style="justify-content:flex-start;gap:12px;padding:13px 16px;text-align:left;display:flex;align-items:center;">
+          <span style="font-size:1.2rem;flex-shrink:0;">⬇</span>
+          <div>
+            <div style="font-weight:600;font-size:.85rem;">Export Word then reset</div>
+            <div style="font-size:.72rem;color:var(--grey-500);margin-top:1px;">Downloads a .docx file, then clears all data</div>
+          </div>
+        </button>
+        <div style="height:1px;background:var(--grey-200);margin:4px 0;"></div>
+        <button onclick="executeReset()" style="padding:13px 16px;background:#DC2626;border:none;border-radius:4px;color:white;font-family:var(--font-body);font-size:.85rem;font-weight:600;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;transition:background .15s;"
+          onmouseover="this.style.background='#B91C1C'" onmouseout="this.style.background='#DC2626'">
+          <span style="font-size:1.2rem;flex-shrink:0;">↺</span>
+          <div>
+            <div>Reset without saving</div>
+            <div style="font-size:.72rem;font-weight:400;opacity:.85;margin-top:1px;">Immediately clears all data — cannot be undone</div>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeResetModal()" style="width:100%;justify-content:center;">Cancel — keep my data</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function confirmReset() {
+  document.getElementById('reset-modal').classList.add('open');
+}
+function closeResetModal() {
+  document.getElementById('reset-modal').classList.remove('open');
+}
+function executeReset() {
+  closeResetModal();
+  state = { profile: state.profile, ambitions: [], intentions: [], actions: [], groguCommentary: [] };
+  save();
+  goStep(1, document.getElementById('tab-1'));
+  renderAmbitions();
+  renderIntentions();
+  renderActions();
+  addAmbition();
+  showToast('↺ Reset complete — ready to start fresh.');
+}
+function resetAfterBackup() {
+  closeResetModal();
+  exportJSON();
+  setTimeout(executeReset, 700);
+}
+function resetAfterPDF() {
+  exportPDF();
+  setTimeout(() => { closeResetModal(); executeReset(); }, 900);
+}
+function resetAfterWord() {
+  closeResetModal();
+  exportWord();
+  setTimeout(executeReset, 2500);
+}
 </script>
 </body>
 </html>
