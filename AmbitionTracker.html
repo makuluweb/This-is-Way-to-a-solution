@@ -6,1617 +6,705 @@
 <title>Ambition Tracker — Bomber's Coaching & Leadership</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,600&family=DM+Mono:wght@300;400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ─── DESIGN TOKENS ─── */
 :root {
-  --navy:      #00338D;
-  --navy-mid:  #0047BB;
-  --blue:      #0091DA;
-  --blue-pale: #E8F3FB;
-  --teal:      #00A3A1;
-  --violet:    #6D2077;
-  --amber:     #B45309;
-  --green:     #166534;
-  --red:       #991B1B;
-
-  --ink:       #0D1B2A;
-  --ink-mid:   #2C3E50;
-  --ink-light: #546E7A;
-  --rule:      #DDE4ED;
-  --surface:   #F4F7FB;
-  --white:     #FFFFFF;
-
-  --font-head: 'Fraunces', Georgia, serif;
-  --font-body: 'Sora', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-
-  --ease: cubic-bezier(.22,.68,0,1.2);
+  --navy:       #00338D;
+  --navy-mid:   #0047BB;
+  --navy-dark:  #001F5C;
+  --blue:       #0091DA;
+  --blue-pale:  #E8F3FB;
+  --blue-ultra: #F0F7FF;
+  --teal:       #00A3A1;
+  --teal-pale:  #E0F5F5;
+  --violet:     #6D2077;
+  --violet-pale:#F3E8F7;
+  --amber:      #B45309;
+  --amber-pale: #FEF3C7;
+  --green:      #166534;
+  --green-pale: #DCFCE7;
+  --red:        #991B1B;
+  --red-pale:   #FEF2F2;
+  --ink:        #0D1B2A;
+  --ink-mid:    #2C3E50;
+  --ink-light:  #546E7A;
+  --rule:       #DDE4ED;
+  --rule-dark:  #C5D0DE;
+  --surface:    #F4F7FB;
+  --white:      #FFFFFF;
+  --font-head:  'Fraunces', Georgia, serif;
+  --font-body:  'Sora', sans-serif;
+  --font-mono:  'DM Mono', monospace;
+  --ease:       cubic-bezier(.22,.68,0,1.2);
+  --shadow-sm:  0 2px 8px rgba(0,51,141,.08);
+  --shadow-md:  0 4px 20px rgba(0,51,141,.12);
+  --shadow-lg:  0 8px 40px rgba(0,51,141,.16);
 }
 
 *{ box-sizing:border-box; margin:0; padding:0; }
 html{ scroll-behavior:smooth; }
+body{ font-family:var(--font-body); background:var(--surface); color:var(--ink); min-height:100vh; font-size:14px; -webkit-font-smoothing:antialiased; }
+body::before{ content:''; position:fixed; inset:0; background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px); background-size:48px 48px; opacity:.35; pointer-events:none; z-index:0; }
 
-body{
-  font-family: var(--font-body);
-  background: var(--surface);
-  color: var(--ink);
-  min-height: 100vh;
-  font-size: 14px;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ─── BACKGROUND PATTERN ─── */
-body::before{
-  content:'';
-  position:fixed; inset:0;
-  background-image:
-    linear-gradient(var(--rule) 1px, transparent 1px),
-    linear-gradient(90deg, var(--rule) 1px, transparent 1px);
-  background-size: 48px 48px;
-  opacity: .4;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ─── MASTHEAD ─── */
-#masthead{
-  position:relative; z-index:10;
-  background: var(--navy);
-  padding: 0 32px;
-  border-bottom: 4px solid var(--blue);
-}
-
-.masthead-inner{
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.brand-block{
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.brand-name{
-  font-family: var(--font-head);
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--white);
-  letter-spacing: -.01em;
-  line-height: 1;
-}
-
-.brand-sub{
-  font-family: var(--font-mono);
-  font-size: .55rem;
-  color: rgba(255,255,255,.45);
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-
-.masthead-actions{
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mast-btn{
-  padding: 7px 16px;
-  background: rgba(255,255,255,.1);
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 3px;
-  color: rgba(255,255,255,.85);
-  font-family: var(--font-body);
-  font-size: .75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all .15s;
-  white-space: nowrap;
-}
+/* ── MASTHEAD ── */
+#masthead{ position:sticky; top:0; z-index:200; background:var(--navy); border-bottom:3px solid var(--blue); box-shadow:0 2px 12px rgba(0,20,60,.3); }
+.mast-inner{ max-width:1280px; margin:0 auto; display:flex; align-items:center; padding:0 28px; height:60px; gap:16px; }
+.brand{ display:flex; flex-direction:column; gap:1px; flex-shrink:0; }
+.brand-name{ font-family:var(--font-head); font-size:1.2rem; font-weight:700; color:var(--white); line-height:1; }
+.brand-sub{ font-family:var(--font-mono); font-size:.5rem; color:rgba(255,255,255,.4); letter-spacing:.18em; text-transform:uppercase; }
+.mast-tabs{ display:flex; gap:2px; margin-left:24px; padding-left:24px; border-left:1px solid rgba(255,255,255,.15); }
+.mast-tab{ padding:7px 16px; background:transparent; border:none; color:rgba(255,255,255,.55); font-family:var(--font-body); font-size:.75rem; font-weight:500; cursor:pointer; border-radius:4px; transition:all .15s; white-space:nowrap; }
+.mast-tab:hover{ background:rgba(255,255,255,.08); color:rgba(255,255,255,.85); }
+.mast-tab.active{ background:rgba(255,255,255,.15); color:var(--white); font-weight:600; }
+.mast-right{ display:flex; align-items:center; gap:8px; margin-left:auto; flex-shrink:0; }
+.mast-btn{ padding:6px 14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:3px; color:rgba(255,255,255,.8); font-family:var(--font-body); font-size:.72rem; font-weight:500; cursor:pointer; transition:all .15s; }
 .mast-btn:hover{ background:rgba(255,255,255,.2); color:var(--white); }
 .mast-btn.primary{ background:var(--blue); border-color:var(--blue); color:var(--white); }
 .mast-btn.primary:hover{ background:#007ab8; }
-
-/* ─── CAMPAIGN COUNT PILL ─── */
-.campaign-count{
-  font-family: var(--font-mono);
-  font-size: .65rem;
-  letter-spacing: .1em;
-  color: rgba(255,255,255,.5);
-  padding: 3px 10px;
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 20px;
-}
-
-/* ─── EMPTY STATE ─── */
-#empty-state{
-  position: relative; z-index:1;
-  max-width: 680px;
-  margin: 80px auto;
-  padding: 0 24px;
-  text-align: center;
-}
-
-.empty-icon{
-  width: 80px; height: 80px;
-  background: var(--navy);
-  border-radius: 50%;
-  margin: 0 auto 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-}
-
-.empty-title{
-  font-family: var(--font-head);
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 12px;
-  line-height: 1.2;
-}
-
-.empty-sub{
-  font-size: .9rem;
-  color: var(--ink-light);
-  line-height: 1.7;
-  margin-bottom: 32px;
-}
-
-.drop-zone{
-  border: 2px dashed var(--rule);
-  border-radius: 8px;
-  padding: 48px 32px;
-  background: var(--white);
-  transition: all .2s;
-  cursor: pointer;
-  position: relative;
-}
-
-.drop-zone.drag-over{
-  border-color: var(--blue);
-  background: var(--blue-pale);
-  transform: scale(1.01);
-}
-
-.drop-zone-icon{ font-size: 2.5rem; margin-bottom: 12px; }
-
-.drop-zone-text{
-  font-size: .9rem;
-  color: var(--ink-light);
-  line-height: 1.6;
-}
-
-.drop-zone-text strong{ color: var(--navy); }
-
-.drop-zone input[type=file]{
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-}
-
-/* ─── MAIN LAYOUT ─── */
-#main-view{
-  display: none;
-  position: relative; z-index:1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 24px 80px;
-}
-
-/* ─── SUMMARY STRIP ─── */
-.summary-strip{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 36px;
-}
-
-@media(max-width:700px){ .summary-strip{ grid-template-columns: repeat(2,1fr); } }
-@media(max-width:420px){ .summary-strip{ grid-template-columns: 1fr; } }
-
-.stat-card{
-  background: var(--white);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 20px 22px;
-  position: relative;
-  overflow: hidden;
-  animation: fadeUp .3s var(--ease) both;
-}
-
-.stat-card::before{
-  content:'';
-  position: absolute;
-  top:0; left:0; right:0;
-  height: 3px;
-}
-
-.stat-card.blue::before{ background:var(--navy); }
-.stat-card.teal::before{ background:var(--teal); }
-.stat-card.amber::before{ background:var(--amber); }
-.stat-card.green::before{ background:var(--green); }
-
-.stat-label{
-  font-family: var(--font-mono);
-  font-size: .6rem;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: var(--ink-light);
-  margin-bottom: 8px;
-}
-
-.stat-value{
-  font-family: var(--font-head);
-  font-size: 2.6rem;
-  font-weight: 700;
-  color: var(--navy);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.stat-sub{
-  font-size: .72rem;
-  color: var(--ink-light);
-}
-
-/* ─── SECTION HEADING ─── */
-.section-head{
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--rule);
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.section-title{
-  font-family: var(--font-head);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--navy);
-  letter-spacing: -.02em;
-}
-
-.section-meta{
-  font-family: var(--font-mono);
-  font-size: .6rem;
-  color: var(--ink-light);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-
-/* ─── CAMPAIGN CARDS ─── */
-#campaigns-grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 20px;
-  margin-bottom: 48px;
-}
-
-.campaign-card{
-  background: var(--white);
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  overflow: hidden;
-  animation: fadeUp .3s var(--ease) both;
-  transition: box-shadow .2s, transform .2s;
-  cursor: pointer;
-}
-
-.campaign-card:hover{
-  box-shadow: 0 6px 24px rgba(0,51,141,.1);
-  transform: translateY(-2px);
-}
-
-.campaign-card-head{
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-  padding: 20px 22px 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-.campaign-card-head::after{
-  content:'';
-  position: absolute;
-  bottom: -30px; right: -30px;
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.05);
-}
-
-.campaign-date{
-  font-family: var(--font-mono);
-  font-size: .58rem;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.5);
-  margin-bottom: 8px;
-}
-
-.campaign-name{
-  font-family: var(--font-head);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 3px;
-  line-height: 1.25;
-}
-
-.campaign-role{
-  font-size: .72rem;
-  color: rgba(255,255,255,.55);
-}
-
-.campaign-card-body{
-  padding: 16px 22px 18px;
-}
-
-/* Progress bars */
-.prog-row{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.prog-label{
-  font-family: var(--font-mono);
-  font-size: .58rem;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--ink-light);
-  width: 72px;
-  flex-shrink: 0;
-}
-
-.prog-bar-wrap{
-  flex: 1;
-  height: 6px;
-  background: var(--surface);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.prog-bar-fill{
-  height: 100%;
-  border-radius: 3px;
-  transition: width .6s var(--ease);
-}
-
-.prog-pct{
-  font-family: var(--font-mono);
-  font-size: .62rem;
-  color: var(--ink-light);
-  width: 30px;
-  text-align: right;
-  flex-shrink: 0;
-}
-
-/* Status dots summary */
-.status-summary{
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--rule);
-}
-
-.status-item{
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: .68rem;
-  color: var(--ink-light);
-}
-
-.status-dot{
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.sd-planned{ background: var(--ink-light); }
-.sd-progress{ background: var(--amber); }
-.sd-complete{ background: var(--green); }
-
-.campaign-card-footer{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 22px;
-  background: var(--surface);
-  border-top: 1px solid var(--rule);
-}
-
-.footer-source{
-  font-family: var(--font-mono);
-  font-size: .58rem;
-  color: var(--ink-light);
-  letter-spacing: .08em;
-}
-
-.btn-detail{
-  font-family: var(--font-mono);
-  font-size: .6rem;
-  letter-spacing: .08em;
-  color: var(--blue);
-  background: none;
-  border: 1px solid var(--blue);
-  border-radius: 3px;
-  padding: 4px 10px;
-  cursor: pointer;
-  transition: all .15s;
-}
-.btn-detail:hover{ background:var(--blue); color:var(--white); }
-
-.btn-remove{
-  background: none;
-  border: none;
-  color: var(--ink-light);
-  font-size: .85rem;
-  cursor: pointer;
-  padding: 3px 6px;
-  border-radius: 3px;
-  transition: all .15s;
-  line-height: 1;
-}
-.btn-remove:hover{ color: var(--red); background: #FEF2F2; }
-
-/* ─── DETAIL PANEL ─── */
-#detail-panel{
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-}
-
-.detail-backdrop{
-  position: absolute;
-  inset: 0;
-  background: rgba(0,20,60,.6);
-  backdrop-filter: blur(4px);
-}
-
-.detail-drawer{
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: min(720px, 100vw);
-  background: var(--white);
-  overflow-y: auto;
-  box-shadow: -8px 0 40px rgba(0,51,141,.15);
-  animation: slideIn .3s var(--ease) both;
-}
-
-@keyframes slideIn{ from{ transform:translateX(40px); opacity:0; } to{ transform:translateX(0); opacity:1; } }
-
-.drawer-head{
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-  padding: 28px 32px 24px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.drawer-close{
-  position: absolute;
-  top: 20px; right: 20px;
-  background: rgba(255,255,255,.15);
-  border: none;
-  color: white;
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .15s;
-}
-.drawer-close:hover{ background:rgba(255,255,255,.3); }
-
-.drawer-date{
-  font-family: var(--font-mono);
-  font-size: .58rem;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.45);
-  margin-bottom: 8px;
-}
-
-.drawer-name{
-  font-family: var(--font-head);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 4px;
-}
-
-.drawer-role{
-  font-size: .78rem;
-  color: rgba(255,255,255,.55);
-}
-
-.drawer-body{
-  padding: 28px 32px;
-}
-
-/* Ambition block in drawer */
-.amb-block{
-  margin-bottom: 28px;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.amb-block-head{
-  background: linear-gradient(90deg, var(--navy), var(--navy-mid));
-  padding: 16px 20px;
-}
-
-.amb-block-eyebrow{
-  font-family: var(--font-mono);
-  font-size: .55rem;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.45);
-  margin-bottom: 5px;
-}
-
-.amb-block-title{
-  font-family: var(--font-head);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 5px;
-}
-
-.amb-block-context{
-  font-size: .78rem;
-  color: rgba(255,255,255,.6);
-  line-height: 1.55;
-}
-
-.guardrail-chips{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 10px 20px;
-  background: rgba(0,51,141,.04);
-  border-bottom: 1px solid var(--rule);
-}
-
-.gr-chip{
-  font-size: .65rem;
-  color: var(--navy);
-  background: var(--blue-pale);
-  border-radius: 20px;
-  padding: 2px 10px;
-}
-
-.amb-block-body{ padding: 18px 20px; }
-
-/* Intention row */
-.intent-row{
-  margin-bottom: 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.intent-row:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
-
-.intent-label{
-  font-family: var(--font-mono);
-  font-size: .55rem;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: var(--teal);
-  margin-bottom: 5px;
-}
-
-.intent-text{
-  font-size: .88rem;
-  color: var(--ink-mid);
-  font-style: italic;
-  line-height: 1.55;
-  margin-bottom: 12px;
-}
-
-/* Action table */
-.action-table{
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .78rem;
-}
-
-.action-table th{
-  font-family: var(--font-mono);
-  font-size: .55rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--ink-light);
-  padding: 6px 10px;
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  text-align: left;
-  font-weight: 500;
-}
-
-.action-table td{
-  padding: 8px 10px;
-  border: 1px solid var(--rule);
-  color: var(--ink-mid);
-  vertical-align: top;
-  line-height: 1.4;
-}
-
-.action-table tr:nth-child(even) td{ background: #FAFBFD; }
-
-.status-badge{
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: .65rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.sb-planned{ background:#EFF6FF; color:#3B82F6; }
-.sb-inprogress{ background:#FFFBEB; color:#D97706; }
-.sb-complete{ background:#F0FDF4; color:#16A34A; }
-
-/* ─── STATUS TOGGLES (interactive) ─── */
-.status-toggle-group{
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
-.status-toggle{
-  padding: 3px 10px;
-  border-radius: 20px;
-  border: 1.5px solid transparent;
-  font-size: .62rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font-body);
-  transition: all .15s;
-  white-space: nowrap;
-  background: var(--surface);
-  color: var(--ink-light);
-  border-color: var(--rule);
-}
-
-.status-toggle:hover{ opacity: .8; }
-
-.status-toggle.active-planned{
-  background: #EFF6FF;
-  color: #3B82F6;
-  border-color: #BFDBFE;
-}
-
-.status-toggle.active-inprogress{
-  background: #FFFBEB;
-  color: #D97706;
-  border-color: #FDE68A;
-}
-
-.status-toggle.active-complete{
-  background: #F0FDF4;
-  color: #16A34A;
-  border-color: #BBF7D0;
-}
-
-/* ─── ACTION NOTES ─── */
-.action-notes-input{
-  width: 100%;
-  padding: 5px 8px;
-  border: 1.5px solid var(--rule);
-  border-radius: 3px;
-  font-family: var(--font-body);
-  font-size: .72rem;
-  color: var(--ink-mid);
-  background: var(--white);
-  resize: none;
-  min-height: 44px;
-  line-height: 1.5;
-  outline: none;
-  transition: border-color .15s;
-}
-
-.action-notes-input::placeholder{ color: var(--ink-light); opacity: .6; }
-.action-notes-input:focus{ border-color: var(--blue); }
-
-/* ─── CHANGED INDICATOR ─── */
-.changed-dot{
-  display: inline-block;
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--teal);
-  margin-left: 6px;
-  vertical-align: middle;
-  animation: pulse-dot 2s infinite;
-}
-
-@keyframes pulse-dot{
-  0%,100%{ opacity:1; transform:scale(1); }
-  50%{ opacity:.5; transform:scale(.8); }
-}
-
-/* ─── EXPORT BUTTON IN DRAWER ─── */
-.export-updated-btn{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: var(--navy);
-  border: none;
-  border-radius: 4px;
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: .82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .15s;
-}
-.export-updated-btn:hover{ background: var(--navy-mid); }
-
-/* ─── GROGU COMMENTARY IN DRAWER ─── */
-.grogu-section{
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 2px solid var(--rule);
-}
-
-.grogu-section-head{
-  font-family: var(--font-head);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.grogu-entry{
-  background: var(--blue-pale);
-  border-left: 3px solid var(--blue);
-  border-radius: 0 4px 4px 0;
-  padding: 12px 16px;
-  margin-bottom: 10px;
-}
-
-.grogu-entry-meta{
-  font-family: var(--font-mono);
-  font-size: .58rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--ink-light);
-  margin-bottom: 6px;
-}
-
-.grogu-entry-text{
-  font-size: .82rem;
-  color: var(--ink-mid);
-  line-height: 1.65;
-  white-space: pre-wrap;
-}
-
-/* ─── COMPARISON VIEW ─── */
-#comparison-section{ margin-bottom: 48px; }
-
-.comparison-table-wrap{
-  overflow-x: auto;
-  background: var(--white);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-}
-
-.comparison-table{
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .8rem;
-  min-width: 600px;
-}
-
-.comparison-table th{
-  padding: 12px 16px;
-  background: var(--navy);
-  color: var(--white);
-  font-family: var(--font-mono);
-  font-size: .58rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  font-weight: 500;
-  text-align: left;
-}
-
-.comparison-table td{
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--rule);
-  vertical-align: middle;
-}
-
-.comparison-table tr:last-child td{ border-bottom: none; }
-.comparison-table tr:nth-child(even) td{ background: #FAFBFD; }
-
-/* Mini progress bar in table */
-.mini-bar-wrap{
-  width: 80px;
-  height: 6px;
-  background: var(--surface);
-  border-radius: 3px;
-  overflow: hidden;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 6px;
-}
-
-.mini-bar-fill{
-  height: 100%;
-  border-radius: 3px;
-}
-
-/* ─── GROGU TIMELINE ─── */
-#timeline-section{ margin-bottom: 48px; }
-
-.timeline{
-  position: relative;
-  padding-left: 28px;
-}
-
-.timeline::before{
-  content:'';
-  position: absolute;
-  left: 8px; top:0; bottom:0;
-  width: 2px;
-  background: linear-gradient(to bottom, var(--navy), var(--blue-pale));
-  border-radius: 1px;
-}
-
-.timeline-entry{
-  position: relative;
-  margin-bottom: 20px;
-  animation: fadeUp .3s var(--ease) both;
-}
-
-.timeline-dot{
-  position: absolute;
-  left: -24px; top: 4px;
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  background: var(--navy);
-  border: 2px solid var(--white);
-  box-shadow: 0 0 0 2px var(--navy);
-}
-
-.timeline-card{
-  background: var(--white);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 14px 18px;
-  transition: box-shadow .2s;
-}
-
-.timeline-card:hover{ box-shadow: 0 3px 12px rgba(0,51,141,.08); }
-
-.timeline-meta{
-  font-family: var(--font-mono);
-  font-size: .58rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--blue);
-  margin-bottom: 5px;
-}
-
-.timeline-campaign{
-  font-size: .72rem;
-  font-weight: 600;
-  color: var(--ink-light);
-  margin-bottom: 5px;
-}
-
-.timeline-text{
-  font-size: .82rem;
-  color: var(--ink-mid);
-  line-height: 1.6;
-}
-
-/* ─── ANIMATIONS ─── */
-@keyframes fadeUp{
-  from{ opacity:0; transform:translateY(12px); }
-  to{ opacity:1; transform:translateY(0); }
-}
-
-/* ─── UTILITY ─── */
-.pill{
-  display: inline-flex;
-  align-items: center;
-  font-size: .62rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 20px;
-  gap: 4px;
-}
-.pill-navy{ background:rgba(0,51,141,.1); color:var(--navy); }
-.pill-blue{ background:var(--blue-pale); color:var(--blue); }
-
-/* Toast */
-.toast{
-  position: fixed;
-  bottom: 24px; right: 24px;
-  background: var(--ink);
-  color: var(--white);
-  padding: 12px 20px;
-  border-radius: 5px;
-  font-size: .8rem;
-  font-weight: 500;
-  z-index: 9000;
-  box-shadow: 0 4px 20px rgba(0,0,0,.25);
-  animation: fadeUp .2s var(--ease) both;
-}
-
-/* ─── RESPONSIVE ─── */
-@media(max-width:640px){
-  .masthead-inner{ height:auto; padding:14px 0; }
-  .drawer-body{ padding:20px; }
-}
+.c-pill{ font-family:var(--font-mono); font-size:.62rem; letter-spacing:.1em; color:rgba(255,255,255,.45); padding:3px 10px; border:1px solid rgba(255,255,255,.15); border-radius:20px; }
+
+/* ── TABS ── */
+.tab-panel{ display:none; }
+.tab-panel.active{ display:block; animation:fadeUp .25s var(--ease) both; }
+@keyframes fadeUp{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── EMPTY STATE ── */
+#empty-state{ position:relative; z-index:1; max-width:640px; margin:80px auto; padding:0 24px; text-align:center; }
+.empty-icon{ font-size:3rem; margin-bottom:20px; }
+.empty-title{ font-family:var(--font-head); font-size:2rem; font-weight:700; color:var(--navy); margin-bottom:10px; }
+.empty-body{ font-size:.88rem; color:var(--ink-light); line-height:1.7; margin-bottom:32px; }
+.drop-zone{ border:2px dashed var(--rule-dark); border-radius:8px; padding:48px 32px; background:var(--white); cursor:pointer; position:relative; transition:all .2s; }
+.drop-zone.drag-over{ border-color:var(--blue); background:var(--blue-ultra); transform:scale(1.01); }
+.drop-zone input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.drop-zone-text{ font-size:.88rem; color:var(--ink-light); line-height:1.6; }
+.drop-zone-text strong{ color:var(--navy); }
+
+/* ── APP ── */
+#app{ position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:28px 24px 100px; }
+
+/* ── STAT STRIP ── */
+.stat-strip{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+@media(max-width:700px){ .stat-strip{ grid-template-columns:repeat(2,1fr); } }
+.stat-card{ background:var(--white); border:1px solid var(--rule); border-radius:6px; padding:20px 22px; position:relative; overflow:hidden; }
+.stat-card::before{ content:''; position:absolute; top:0;left:0;right:0; height:3px; }
+.sc-blue::before{ background:var(--navy); }
+.sc-teal::before{ background:var(--teal); }
+.sc-amber::before{ background:var(--amber); }
+.sc-green::before{ background:var(--green); }
+.stat-lbl{ font-family:var(--font-mono); font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-light); margin-bottom:8px; }
+.stat-val{ font-family:var(--font-head); font-size:2.4rem; font-weight:700; color:var(--navy); line-height:1; margin-bottom:4px; }
+.stat-sub{ font-size:.7rem; color:var(--ink-light); }
+
+/* ── SECTION HEAD ── */
+.sec-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid var(--rule); flex-wrap:wrap; gap:8px; }
+.sec-title{ font-family:var(--font-head); font-size:1.5rem; font-weight:700; color:var(--navy); }
+.sec-meta{ font-family:var(--font-mono); font-size:.6rem; color:var(--ink-light); letter-spacing:.1em; text-transform:uppercase; }
+
+/* ── CAMPAIGN CARDS ── */
+.c-card{ background:var(--white); border:1px solid var(--rule); border-radius:8px; overflow:hidden; box-shadow:var(--shadow-sm); transition:box-shadow .2s,transform .2s; animation:fadeUp .25s var(--ease) both; }
+.c-card:hover{ box-shadow:var(--shadow-md); transform:translateY(-1px); }
+.c-card-head{ background:linear-gradient(135deg,var(--navy),var(--navy-mid)); padding:18px 22px; cursor:pointer; }
+.c-date{ font-family:var(--font-mono); font-size:.56rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:6px; }
+.c-name{ font-family:var(--font-head); font-size:1.05rem; font-weight:700; color:var(--white); margin-bottom:2px; }
+.c-role{ font-size:.7rem; color:rgba(255,255,255,.5); }
+.c-body{ padding:14px 22px 16px; }
+.prog-row{ display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+.prog-lbl{ font-family:var(--font-mono); font-size:.56rem; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-light); width:70px; flex-shrink:0; }
+.prog-wrap{ flex:1; height:5px; background:var(--surface); border-radius:3px; overflow:hidden; }
+.prog-fill{ height:100%; border-radius:3px; transition:width .5s var(--ease); }
+.prog-pct{ font-family:var(--font-mono); font-size:.6rem; color:var(--ink-light); width:30px; text-align:right; flex-shrink:0; }
+.s-row{ display:flex; gap:10px; margin-top:10px; padding-top:10px; border-top:1px solid var(--rule); }
+.s-item{ display:flex; align-items:center; gap:4px; font-size:.67rem; color:var(--ink-light); }
+.s-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.sd-p{ background:var(--ink-light); } .sd-i{ background:var(--amber); } .sd-c{ background:var(--green); }
+.c-footer{ display:flex; align-items:center; justify-content:space-between; padding:9px 22px; background:var(--surface); border-top:1px solid var(--rule); }
+.c-source{ font-family:var(--font-mono); font-size:.56rem; color:var(--ink-light); }
+.btn-open{ font-family:var(--font-mono); font-size:.6rem; letter-spacing:.06em; color:var(--blue); background:none; border:1px solid var(--blue); border-radius:3px; padding:3px 10px; cursor:pointer; transition:all .15s; }
+.btn-open:hover{ background:var(--blue); color:var(--white); }
+.btn-icon{ background:none; border:none; cursor:pointer; color:var(--ink-light); padding:4px 6px; border-radius:3px; font-size:.9rem; transition:all .15s; line-height:1; }
+.btn-icon:hover{ color:var(--red); background:var(--red-pale); }
+
+/* ── EDITOR LAYOUT ── */
+#editor-layout{ display:grid; grid-template-columns:260px 1fr; height:calc(100vh - 60px); overflow:hidden; position:fixed; inset:0; top:60px; z-index:100; }
+#campaign-sidebar{ background:var(--navy-dark); border-right:1px solid rgba(255,255,255,.08); overflow-y:auto; display:flex; flex-direction:column; }
+.sidebar-head{ padding:16px; border-bottom:1px solid rgba(255,255,255,.08); flex-shrink:0; }
+.sidebar-lbl{ font-family:var(--font-mono); font-size:.56rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+.sidebar-list{ flex:1; overflow-y:auto; padding:6px 0; }
+.si{ display:flex; align-items:flex-start; padding:10px 16px; cursor:pointer; border-left:3px solid transparent; transition:all .15s; }
+.si:hover{ background:rgba(255,255,255,.05); border-left-color:rgba(255,255,255,.2); }
+.si.active{ background:rgba(255,255,255,.08); border-left-color:var(--blue); }
+.si-name{ font-size:.8rem; font-weight:600; color:rgba(255,255,255,.8); flex:1; line-height:1.3; }
+.si-meta{ font-family:var(--font-mono); font-size:.57rem; color:rgba(255,255,255,.3); margin-top:3px; }
+.si-pct{ font-family:var(--font-mono); font-size:.62rem; color:rgba(255,255,255,.35); flex-shrink:0; margin-left:8px; padding-top:1px; }
+#editor-main{ background:var(--surface); overflow-y:auto; display:flex; flex-direction:column; }
+.editor-topbar{ background:var(--white); border-bottom:1px solid var(--rule); padding:12px 28px; display:flex; align-items:center; gap:14px; flex-shrink:0; flex-wrap:wrap; }
+.etp-name{ font-family:var(--font-head); font-size:1rem; font-weight:700; color:var(--navy); flex:1; }
+.editor-body{ padding:28px; flex:1; }
+@media(max-width:768px){ #editor-layout{ grid-template-columns:1fr; } #campaign-sidebar{ display:none; } }
+
+/* ── FORM ELEMENTS ── */
+.fl{ display:block; font-family:var(--font-mono); font-size:.57rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-light); margin-bottom:5px; font-weight:500; }
+.inp{ width:100%; padding:9px 12px; border:1.5px solid var(--rule); border-radius:4px; font-family:var(--font-body); font-size:.85rem; color:var(--ink); background:var(--white); outline:none; transition:border-color .15s,box-shadow .15s; }
+.inp::placeholder{ color:var(--ink-light); opacity:.5; }
+.inp:focus{ border-color:var(--navy); box-shadow:0 0 0 3px rgba(0,51,141,.07); }
+textarea.inp{ resize:vertical; min-height:68px; line-height:1.6; }
+
+/* ── BUTTONS ── */
+.btn{ display:inline-flex; align-items:center; gap:6px; padding:8px 18px; border-radius:4px; font-family:var(--font-body); font-size:.78rem; font-weight:600; cursor:pointer; transition:all .15s; border:none; }
+.btn-primary{ background:var(--navy); color:var(--white); }
+.btn-primary:hover{ background:var(--navy-mid); }
+.btn-ghost{ background:transparent; color:var(--ink-light); border:1.5px dashed var(--rule-dark); }
+.btn-ghost:hover{ border-color:var(--navy); color:var(--navy); background:var(--blue-ultra); }
+.btn-ghost-teal{ background:transparent; color:var(--teal); border:1.5px dashed rgba(0,163,161,.35); }
+.btn-ghost-teal:hover{ background:var(--teal-pale); border-color:var(--teal); }
+.btn-ghost-violet{ background:transparent; color:var(--violet); border:1.5px dashed rgba(109,32,119,.3); }
+.btn-ghost-violet:hover{ background:var(--violet-pale); border-color:var(--violet); }
+.btn-danger{ background:var(--red-pale); color:var(--red); border:1.5px solid #FECACA; }
+.btn-danger:hover{ background:#FEE2E2; }
+
+/* ── AMBITION EDITOR CARD ── */
+.amb-card{ background:var(--white); border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin-bottom:20px; box-shadow:var(--shadow-sm); animation:fadeUp .2s var(--ease) both; }
+.amb-head{ background:linear-gradient(135deg,var(--navy),var(--navy-mid)); padding:16px 20px; display:flex; align-items:flex-start; gap:12px; }
+.amb-num{ font-family:var(--font-mono); font-size:.58rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.35); flex-shrink:0; padding-top:5px; width:36px; }
+.amb-fields{ flex:1; display:flex; flex-direction:column; gap:10px; }
+.amb-title-i{ background:transparent; border:none; border-bottom:1.5px solid rgba(255,255,255,.18); padding:4px 0 6px; font-family:var(--font-head); font-size:1.05rem; font-weight:700; color:var(--white); outline:none; width:100%; transition:border-color .15s; }
+.amb-title-i::placeholder{ color:rgba(255,255,255,.25); }
+.amb-title-i:focus{ border-bottom-color:rgba(255,255,255,.55); }
+.amb-ctx-i{ background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:4px; padding:8px 12px; font-family:var(--font-body); font-size:.8rem; color:rgba(255,255,255,.8); outline:none; resize:vertical; min-height:58px; width:100%; line-height:1.6; }
+.amb-ctx-i::placeholder{ color:rgba(255,255,255,.22); }
+.amb-ctx-i:focus{ border-color:rgba(255,255,255,.3); }
+.amb-del-btn{ background:rgba(255,255,255,.07); border:none; cursor:pointer; color:rgba(255,255,255,.45); padding:5px 8px; border-radius:3px; font-size:.85rem; transition:all .15s; flex-shrink:0; margin-top:2px; }
+.amb-del-btn:hover{ background:rgba(239,68,68,.2); color:#fca5a5; }
+
+/* ── GUARDRAIL ── */
+.gr-sec{ padding:12px 20px; background:rgba(0,51,141,.025); border-bottom:1px solid var(--rule); }
+.gr-row{ display:flex; align-items:center; gap:8px; margin-bottom:7px; animation:fadeUp .15s var(--ease) both; }
+.gr-i{ flex:1; padding:6px 10px; border:1.5px solid var(--rule); border-radius:3px; font-family:var(--font-body); font-size:.78rem; color:var(--ink); background:var(--white); outline:none; transition:border-color .15s; }
+.gr-i:focus{ border-color:var(--navy); }
+
+/* ── INTENTION CARD ── */
+.int-sec{ padding:18px 20px; border-bottom:1px solid var(--rule); }
+.int-lbl-head{ font-family:var(--font-mono); font-size:.56rem; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); margin-bottom:10px; }
+.int-card{ background:var(--surface); border:1px solid var(--rule); border-left:3px solid var(--teal); border-radius:4px; padding:14px 16px; margin-bottom:12px; animation:fadeUp .2s var(--ease) both; }
+.int-hdr{ display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; }
+.int-num{ font-family:var(--font-mono); font-size:.57rem; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); flex-shrink:0; padding-top:3px; }
+.int-inp{ flex:1; padding:7px 10px; border:1.5px solid var(--rule); border-radius:3px; font-family:var(--font-body); font-size:.85rem; color:var(--ink); background:var(--white); outline:none; resize:vertical; min-height:56px; line-height:1.55; transition:border-color .15s; }
+.int-inp:focus{ border-color:var(--teal); }
+
+/* ── ACTION CARD ── */
+.act-sec{ padding:12px 16px 16px; background:var(--white); }
+.act-lbl-head{ font-family:var(--font-mono); font-size:.56rem; letter-spacing:.14em; text-transform:uppercase; color:var(--violet); margin-bottom:8px; }
+.act-card{ background:var(--white); border:1px solid var(--rule); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; margin-bottom:10px; animation:fadeUp .2s var(--ease) both; }
+.act-hdr{ display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+.act-num{ font-family:var(--font-mono); font-size:.57rem; letter-spacing:.12em; text-transform:uppercase; color:var(--violet); flex-shrink:0; }
+.act-title-i{ flex:1; min-width:160px; padding:6px 10px; border:1.5px solid var(--rule); border-radius:3px; font-family:var(--font-body); font-size:.85rem; font-weight:600; color:var(--ink); background:var(--white); outline:none; transition:border-color .15s; }
+.act-title-i:focus{ border-color:var(--violet); }
+.st-group{ display:flex; gap:5px; flex-wrap:wrap; }
+.st{ padding:4px 12px; border-radius:20px; border:1.5px solid var(--rule); font-family:var(--font-body); font-size:.65rem; font-weight:600; cursor:pointer; transition:all .15s; background:var(--surface); color:var(--ink-light); }
+.st.planned.on{ background:var(--blue-pale); color:#3B82F6; border-color:#BFDBFE; }
+.st.inprogress.on{ background:var(--amber-pale); color:var(--amber); border-color:#FDE68A; }
+.st.complete.on{ background:var(--green-pale); color:var(--green); border-color:#86EFAC; }
+.act-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+@media(max-width:560px){ .act-grid{ grid-template-columns:1fr; } }
+.notes-i{ width:100%; padding:7px 10px; border:1.5px solid var(--rule); border-radius:3px; font-family:var(--font-body); font-size:.78rem; color:var(--ink); background:rgba(109,32,119,.02); outline:none; resize:vertical; min-height:50px; line-height:1.5; transition:border-color .15s; }
+.notes-i::placeholder{ color:var(--ink-light); opacity:.5; }
+.notes-i:focus{ border-color:var(--violet); }
+
+/* ── COMPARISON ── */
+.comp-wrap{ overflow-x:auto; background:var(--white); border:1px solid var(--rule); border-radius:6px; }
+.comp-tbl{ width:100%; border-collapse:collapse; font-size:.78rem; min-width:600px; }
+.comp-tbl th{ padding:12px 16px; background:var(--navy); color:var(--white); font-family:var(--font-mono); font-size:.56rem; letter-spacing:.1em; text-transform:uppercase; font-weight:500; text-align:left; }
+.comp-tbl td{ padding:12px 16px; border-bottom:1px solid var(--rule); vertical-align:middle; }
+.comp-tbl tr:last-child td{ border-bottom:none; }
+.comp-tbl tr:nth-child(even) td{ background:#FAFBFD; }
+.mini-bar{ width:72px; height:5px; background:var(--surface); border-radius:3px; overflow:hidden; display:inline-block; vertical-align:middle; margin-right:6px; }
+.mini-fill{ height:100%; border-radius:3px; }
+
+/* ── TIMELINE ── */
+.timeline{ position:relative; padding-left:28px; }
+.timeline::before{ content:''; position:absolute; left:8px; top:0; bottom:0; width:2px; background:linear-gradient(to bottom,var(--navy),var(--blue-pale)); border-radius:1px; }
+.tl-entry{ position:relative; margin-bottom:18px; animation:fadeUp .25s var(--ease) both; }
+.tl-dot{ position:absolute; left:-24px; top:4px; width:12px; height:12px; border-radius:50%; background:var(--navy); border:2px solid var(--white); box-shadow:0 0 0 2px var(--navy); }
+.tl-card{ background:var(--white); border:1px solid var(--rule); border-radius:6px; padding:14px 18px; }
+.tl-meta{ font-family:var(--font-mono); font-size:.56rem; letter-spacing:.12em; text-transform:uppercase; color:var(--blue); margin-bottom:4px; }
+.tl-campaign{ font-size:.7rem; font-weight:600; color:var(--ink-light); margin-bottom:5px; }
+.tl-text{ font-size:.82rem; color:var(--ink-mid); line-height:1.6; }
+
+/* ── MODAL ── */
+.modal-bg{ display:none; position:fixed; inset:0; background:rgba(0,20,60,.5); z-index:9000; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+.modal-bg.open{ display:flex; }
+.modal-box{ background:var(--white); border-radius:8px; padding:28px 32px; width:min(400px,92vw); box-shadow:var(--shadow-lg); animation:fadeUp .2s var(--ease) both; }
+.modal-title{ font-family:var(--font-head); font-size:1.1rem; font-weight:700; color:var(--red); margin-bottom:8px; }
+.modal-desc{ font-size:.84rem; color:var(--ink-mid); line-height:1.6; margin-bottom:20px; }
+.modal-actions{ display:flex; gap:10px; justify-content:flex-end; }
+
+/* ── TOAST ── */
+.toast-el{ position:fixed; bottom:24px; right:24px; background:var(--ink); color:var(--white); padding:11px 20px; border-radius:5px; font-size:.78rem; font-weight:500; z-index:9500; box-shadow:var(--shadow-md); animation:fadeUp .2s var(--ease) both; }
+
+::-webkit-scrollbar{ width:6px; height:6px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:var(--rule-dark); border-radius:3px; }
 </style>
 </head>
 <body>
 
-<!-- ─── MASTHEAD ─── -->
 <div id="masthead">
-  <div class="masthead-inner">
-    <div class="brand-block">
+  <div class="mast-inner">
+    <div class="brand">
       <div class="brand-name">Ambition Tracker</div>
       <div class="brand-sub">Bomber's Coaching & Leadership</div>
     </div>
-    <div class="masthead-actions">
-      <span class="campaign-count" id="campaign-count">0 campaigns</span>
-      <label class="mast-btn" style="cursor:pointer;" title="Import a JSON backup from your coaching app">
-        ↑ Import Campaign
-        <input type="file" accept=".json" multiple style="display:none" onchange="importCampaigns(event)">
-      </label>
-      <button class="mast-btn" onclick="clearAllCampaigns()" title="Remove all campaigns from tracker" style="opacity:.6;">✕ Clear All</button>
+    <div class="mast-tabs">
+      <button class="mast-tab active" onclick="switchTab('dashboard',this)">Dashboard</button>
+      <button class="mast-tab" onclick="switchTab('editor',this)">Editor</button>
+      <button class="mast-tab" onclick="switchTab('compare',this)">Compare</button>
+      <button class="mast-tab" onclick="switchTab('timeline',this)">🐸 Grogu</button>
+    </div>
+    <div class="mast-right">
+      <span class="c-pill" id="c-pill">0 campaigns</span>
+      <label class="mast-btn primary" style="cursor:pointer;">↑ Import<input type="file" accept=".json" multiple style="display:none" onchange="importFiles(event)"></label>
+      <button class="mast-btn" onclick="newBlank()">+ New</button>
     </div>
   </div>
 </div>
 
-<!-- ─── EMPTY STATE ─── -->
-<div id="empty-state">
+<div id="empty-state" style="display:none;">
   <div class="empty-icon">📊</div>
   <div class="empty-title">No campaigns yet</div>
-  <div class="empty-sub">Import JSON backup files exported from your Ambition coaching apps to start tracking progress across campaigns. You can import multiple files at once.</div>
-
+  <div class="empty-body">Import JSON backups from your coaching apps, or start a new blank campaign from scratch. You can drag JSON files anywhere on this page.</div>
   <div class="drop-zone" id="drop-zone">
-    <input type="file" accept=".json" multiple onchange="importCampaigns(event)">
-    <div class="drop-zone-icon">⬆</div>
-    <div class="drop-zone-text">
-      <strong>Drop JSON backup files here</strong><br>
-      or click to browse · Import from Ambition, Ambition Coach, or I Do What Must Be Done
-    </div>
-  </div>
-
-  <div style="margin-top:24px;font-size:.75rem;color:var(--ink-light);line-height:1.6;">
-    Export backups from your coaching app using the <strong>↓ Backup</strong> button.<br>
-    Each backup represents one coaching campaign.
+    <input type="file" accept=".json" multiple onchange="importFiles(event)">
+    <div style="font-size:2.5rem;margin-bottom:12px;">⬆</div>
+    <div class="drop-zone-text"><strong>Drop JSON backup files here</strong><br>or click to browse — works with all three Bomber's coaching apps</div>
   </div>
 </div>
 
-<!-- ─── MAIN VIEW ─── -->
-<div id="main-view">
+<div id="app" style="display:none;">
 
-  <!-- Drop zone strip at top -->
-  <div style="background:var(--white);border-bottom:1px solid var(--rule);padding:12px 24px;position:sticky;top:64px;z-index:50;">
-    <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.78rem;color:var(--ink-light);font-weight:500;padding:7px 14px;border:1.5px dashed var(--rule);border-radius:4px;transition:all .15s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--rule)';this.style.color='var(--ink-light)'">
-        <span>+</span> Add campaign
-        <input type="file" accept=".json" multiple style="display:none" onchange="importCampaigns(event)">
-      </label>
-      <span style="font-size:.72rem;color:var(--ink-light);">Drop JSON backup files anywhere on this page</span>
+  <!-- DASHBOARD -->
+  <div class="tab-panel active" id="tab-dashboard">
+    <div class="stat-strip" id="stat-strip"></div>
+    <div class="sec-head">
+      <div class="sec-title">Campaigns</div>
+      <div class="sec-meta" id="c-meta"></div>
+    </div>
+    <div id="c-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;margin-bottom:40px;"></div>
+  </div>
+
+  <!-- EDITOR -->
+  <div class="tab-panel" id="tab-editor" style="padding:0;margin:-28px -24px -100px;">
+    <div id="editor-layout">
+      <div id="campaign-sidebar">
+        <div class="sidebar-head">
+          <div class="sidebar-lbl">Campaigns</div>
+          <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:.68rem;padding:6px 10px;color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.12);" onclick="newBlank()">+ New Campaign</button>
+        </div>
+        <div class="sidebar-list" id="sidebar-list"></div>
+      </div>
+      <div id="editor-main">
+        <div id="etp"></div>
+        <div class="editor-body" id="editor-body">
+          <div style="text-align:center;padding:60px 20px;color:var(--ink-light);font-style:italic;">Select a campaign to start editing</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div style="max-width:1200px;margin:0 auto;padding:32px 24px 80px;">
-
-    <!-- Summary Stats -->
-    <div class="summary-strip" id="summary-strip"></div>
-
-    <!-- Campaigns Grid -->
-    <div class="section-head">
-      <div class="section-title">Campaigns</div>
-      <div class="section-meta" id="campaigns-meta"></div>
+  <!-- COMPARE -->
+  <div class="tab-panel" id="tab-compare">
+    <div class="sec-head"><div class="sec-title">Completion Overview</div><div class="sec-meta">All campaigns · actions by status</div></div>
+    <div class="comp-wrap">
+      <table class="comp-tbl">
+        <thead><tr><th>Campaign</th><th>Ambitions</th><th>Intentions</th><th>Actions</th><th>Planned</th><th>In Progress</th><th>Complete</th><th>% Done</th></tr></thead>
+        <tbody id="comp-body"></tbody>
+      </table>
     </div>
-    <div id="campaigns-grid"></div>
-
-    <!-- Cross-Campaign Comparison -->
-    <div id="comparison-section">
-      <div class="section-head">
-        <div class="section-title">Completion Overview</div>
-        <div class="section-meta">All campaigns · actions by status</div>
-      </div>
-      <div class="comparison-table-wrap">
-        <table class="comparison-table" id="comparison-table">
-          <thead>
-            <tr>
-              <th>Campaign</th>
-              <th>Ambitions</th>
-              <th>Intentions</th>
-              <th>Actions</th>
-              <th>Planned</th>
-              <th>In Progress</th>
-              <th>Complete</th>
-              <th>% Done</th>
-            </tr>
-          </thead>
-          <tbody id="comparison-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Grogu Commentary Timeline -->
-    <div id="timeline-section">
-      <div class="section-head">
-        <div class="section-title">🐸 Grogu Commentary Timeline</div>
-        <div class="section-meta" id="timeline-meta"></div>
-      </div>
-      <div id="timeline" class="timeline"></div>
-    </div>
-
   </div>
+
+  <!-- TIMELINE -->
+  <div class="tab-panel" id="tab-timeline">
+    <div class="sec-head"><div class="sec-title">🐸 Grogu Commentary</div><div class="sec-meta" id="tl-meta"></div></div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
 </div>
 
-<!-- ─── DETAIL DRAWER ─── -->
-<div id="detail-panel">
-  <div class="detail-backdrop" onclick="closeDetail()"></div>
-  <div class="detail-drawer" id="detail-drawer"></div>
+<!-- DELETE MODAL -->
+<div class="modal-bg" id="del-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="del-title">Confirm Delete</div>
+    <div class="modal-desc" id="del-body"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeDel()">Cancel</button>
+      <button class="btn btn-danger" id="del-confirm">Delete</button>
+    </div>
+  </div>
 </div>
 
 <script>
-/* ════════════════════════════════════════════
-   STATE
-════════════════════════════════════════════ */
-let campaigns = []; // array of { id, importedAt, filename, ...state }
+let campaigns = [];
+let activeCid = null;
+let activeTab = 'dashboard';
+const STORE = 'ambition-tracker-v2';
 
-const STORAGE_KEY = 'ambition-tracker-v1';
-
-/* ════════════════════════════════════════════
-   INIT
-════════════════════════════════════════════ */
-function init() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try { campaigns = JSON.parse(saved); } catch(e) { campaigns = []; }
-  }
-  setupDragDrop();
-  render();
+/* ── BOOT ── */
+function boot() {
+  const raw = localStorage.getItem(STORE);
+  if (raw) try { campaigns = JSON.parse(raw); } catch(e) { campaigns=[]; }
+  setupDnd();
+  renderAll();
 }
 
 function persist() {
-  // Strip avatar data to avoid localStorage size issues
-  const slim = campaigns.map(c => ({
-    ...c,
-    profile: { ...c.profile, avatar: '' }
-  }));
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-  } catch(e) {
-    // localStorage full — still works, just won't persist avatars
-    console.warn('localStorage full, campaigns stored without avatars');
-  }
+  const slim = campaigns.map(c => ({...c, profile:{...c.profile, avatar:''}}));
+  try { localStorage.setItem(STORE, JSON.stringify(slim)); } catch(e) {}
 }
 
-/* ════════════════════════════════════════════
-   IMPORT
-════════════════════════════════════════════ */
-function importCampaigns(e) {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
-  let loaded = 0;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
+/* ── IMPORT / NEW ── */
+function importFiles(e) {
+  Array.from(e.target.files||[]).forEach(file => {
+    const r = new FileReader();
+    r.onload = ev => {
       try {
-        const data = JSON.parse(ev.target.result);
-        if (data.ambitions !== undefined) {
-          // Check for duplicate (same profile name + same ambition count on same date)
-          const id = 'c' + Date.now() + Math.random().toString(36).slice(2,6);
-          campaigns.unshift({
-            id,
-            importedAt: new Date().toISOString(),
-            filename: file.name,
-            profile: data.profile || {},
-            ambitions: data.ambitions || [],
-            intentions: data.intentions || [],
-            actions: data.actions || [],
-            groguCommentary: data.groguCommentary || []
-          });
-          loaded++;
-          persist();
-          render();
-          showToast(`✅ Imported: ${file.name}`);
-        } else {
-          showToast(`⚠ ${file.name} — not a valid backup file`);
-        }
-      } catch(err) {
-        showToast(`⚠ Could not read ${file.name}`);
-      }
+        const d = JSON.parse(ev.target.result);
+        if (d.ambitions !== undefined) {
+          const c = mkCampaign(d, file.name);
+          campaigns.unshift(c);
+          persist(); renderAll();
+          if (!activeCid) { activeCid = c.id; }
+          showToast('✅ Imported: ' + file.name);
+        } else showToast('⚠ ' + file.name + ' — not a valid backup');
+      } catch { showToast('⚠ Could not read ' + file.name); }
     };
-    reader.readAsText(file);
+    r.readAsText(file);
   });
-  // Reset file inputs
   e.target.value = '';
 }
 
-function removeCampaign(id) {
-  campaigns = campaigns.filter(c => c.id !== id);
-  persist();
-  render();
-  closeDetail();
-  showToast('Campaign removed.');
+function mkCampaign(data, filename) {
+  return {
+    id: 'c'+Date.now()+Math.random().toString(36).slice(2,5),
+    importedAt: new Date().toISOString(),
+    filename: filename || 'campaign.json',
+    profile: data.profile || {name:'',role:'',org:'',avatar:''},
+    ambitions: data.ambitions || [],
+    intentions: data.intentions || [],
+    actions: data.actions || [],
+    groguCommentary: data.groguCommentary || []
+  };
 }
 
-function clearAllCampaigns() {
-  if (!campaigns.length) return;
-  if (!confirm('Remove all campaigns from the tracker? This cannot be undone.')) return;
-  campaigns = [];
-  persist();
-  render();
+function newBlank() {
+  const c = mkCampaign({profile:{name:'New Campaign',role:'',org:'',avatar:''},ambitions:[],intentions:[],actions:[],groguCommentary:[]},'new-campaign.json');
+  campaigns.unshift(c); activeCid = c.id;
+  persist(); renderAll();
+  switchTab('editor', document.querySelectorAll('.mast-tab')[1]);
+  renderEditor();
 }
 
-/* ════════════════════════════════════════════
-   DRAG AND DROP
-════════════════════════════════════════════ */
-function setupDragDrop() {
-  const dz = document.getElementById('drop-zone');
-
-  ['dragenter','dragover'].forEach(ev => {
-    document.addEventListener(ev, e => {
-      e.preventDefault();
-      if (dz) dz.classList.add('drag-over');
-    });
-  });
-
-  ['dragleave','drop'].forEach(ev => {
-    document.addEventListener(ev, e => {
-      if (dz) dz.classList.remove('drag-over');
-    });
-  });
-
-  document.addEventListener('drop', e => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.json'));
-    if (!files.length) { showToast('Please drop JSON backup files.'); return; }
-    // Simulate file input event
-    importCampaigns({ target: { files, value:'' } });
-  });
+function exportUpdated(cid) {
+  const c = getC(cid); if(!c) return;
+  const blob = new Blob([JSON.stringify({profile:c.profile,ambitions:c.ambitions,intentions:c.intentions,actions:c.actions,groguCommentary:c.groguCommentary},null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ambition-'+((c.profile.name||'campaign').replace(/[^a-z0-9]/gi,'-').toLowerCase())+'-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  showToast('↓ Exported — re-import into coaching app via Restore');
 }
 
-/* ════════════════════════════════════════════
-   HELPERS
-════════════════════════════════════════════ */
-function getStats(c) {
-  const totalActions = c.actions.length;
-  const planned   = c.actions.filter(a => a.status === 'planned').length;
-  const inprog    = c.actions.filter(a => a.status === 'inprogress').length;
-  const complete  = c.actions.filter(a => a.status === 'complete').length;
-  const pct = totalActions > 0 ? Math.round((complete / totalActions) * 100) : 0;
-  return { totalActions, planned, inprog, complete, pct };
+/* ── DELETE MODAL ── */
+function confirmDel(title, body, fn) {
+  document.getElementById('del-title').textContent = title;
+  document.getElementById('del-body').textContent = body;
+  document.getElementById('del-confirm').onclick = () => { fn(); closeDel(); };
+  document.getElementById('del-modal').classList.add('open');
+}
+function closeDel() { document.getElementById('del-modal').classList.remove('open'); }
+
+/* ── HELPERS ── */
+function getC(cid) { return campaigns.find(x=>x.id===cid); }
+function stats(c) {
+  const t=c.actions.length,
+        p=c.actions.filter(a=>a.status==='planned').length,
+        i=c.actions.filter(a=>a.status==='inprogress').length,
+        d=c.actions.filter(a=>a.status==='complete').length;
+  return {t,p,i,d,pct:t>0?Math.round(d/t*100):0};
+}
+function lbl(c) { return c.profile?.name||c.filename?.replace('.json','')||'Unnamed'; }
+function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ── RENDER ALL ── */
+function renderAll() {
+  const has = campaigns.length>0;
+  document.getElementById('empty-state').style.display = has?'none':'block';
+  document.getElementById('app').style.display = has?'block':'none';
+  document.getElementById('c-pill').textContent = campaigns.length+' campaign'+(campaigns.length!==1?'s':'');
+  if (!has) return;
+  renderDashboard(); renderSidebar(); renderCompare(); renderTimeline();
 }
 
-function campaignLabel(c) {
-  return c.profile?.name || c.filename?.replace('.json','') || 'Unnamed Campaign';
-}
-
-function formatDate(iso) {
-  return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-}
-
-function esc(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-/* ════════════════════════════════════════════
-   RENDER
-════════════════════════════════════════════ */
-function render() {
-  const hasData = campaigns.length > 0;
-  document.getElementById('empty-state').style.display = hasData ? 'none' : 'block';
-  document.getElementById('main-view').style.display   = hasData ? 'block' : 'none';
-
-  // Update count pill
-  const countEl = document.getElementById('campaign-count');
-  countEl.textContent = `${campaigns.length} campaign${campaigns.length !== 1 ? 's' : ''}`;
-
-  if (!hasData) return;
-
-  renderSummaryStrip();
-  renderCampaignCards();
-  renderComparisonTable();
-  renderTimeline();
-}
-
-function renderSummaryStrip() {
-  const totalCampaigns = campaigns.length;
-  const totalAmbitions = campaigns.reduce((s,c) => s + c.ambitions.length, 0);
-  const totalActions   = campaigns.reduce((s,c) => s + c.actions.length, 0);
-  const totalComplete  = campaigns.reduce((s,c) => s + c.actions.filter(a => a.status === 'complete').length, 0);
-  const overallPct     = totalActions > 0 ? Math.round((totalComplete/totalActions)*100) : 0;
-
-  document.getElementById('summary-strip').innerHTML = `
-    <div class="stat-card blue" style="animation-delay:.0s">
-      <div class="stat-label">Campaigns</div>
-      <div class="stat-value">${totalCampaigns}</div>
-      <div class="stat-sub">coaching sessions tracked</div>
-    </div>
-    <div class="stat-card teal" style="animation-delay:.06s">
-      <div class="stat-label">Ambitions</div>
-      <div class="stat-value">${totalAmbitions}</div>
-      <div class="stat-sub">across all campaigns</div>
-    </div>
-    <div class="stat-card amber" style="animation-delay:.12s">
-      <div class="stat-label">Actions</div>
-      <div class="stat-value">${totalActions}</div>
-      <div class="stat-sub">${totalComplete} complete · ${totalActions - totalComplete} remaining</div>
-    </div>
-    <div class="stat-card green" style="animation-delay:.18s">
-      <div class="stat-label">Overall Progress</div>
-      <div class="stat-value">${overallPct}%</div>
-      <div class="stat-sub">actions marked complete</div>
-    </div>`;
-}
-
-function renderCampaignCards() {
-  const grid = document.getElementById('campaigns-grid');
-  const meta = document.getElementById('campaigns-meta');
-  meta.textContent = `${campaigns.length} imported · most recent first`;
-
-  grid.innerHTML = campaigns.map((c, idx) => {
-    const s = getStats(c);
-    const label = campaignLabel(c);
-    const role = [c.profile?.role, c.profile?.org].filter(Boolean).join(' · ');
-    const intPct = c.intentions.length > 0
-      ? Math.round((c.intentions.filter(i => c.actions.some(a => a.intentionId === i.id)).length / c.intentions.length) * 100)
-      : 0;
-
-    return `
-    <div class="campaign-card" style="animation-delay:${idx * .05}s" onclick="openDetail('${c.id}')">
-      <div class="campaign-card-head">
-        <div class="campaign-date">${formatDate(c.importedAt)} · ${c.ambitions.length} ambition${c.ambitions.length!==1?'s':''}</div>
-        <div class="campaign-name">${esc(label)}</div>
-        ${role ? `<div class="campaign-role">${esc(role)}</div>` : ''}
+/* ── DASHBOARD ── */
+function renderDashboard() {
+  const ta=campaigns.reduce((s,c)=>s+c.ambitions.length,0);
+  const tac=campaigns.reduce((s,c)=>s+c.actions.length,0);
+  const tc=campaigns.reduce((s,c)=>s+c.actions.filter(a=>a.status==='complete').length,0);
+  const pct=tac>0?Math.round(tc/tac*100):0;
+  document.getElementById('stat-strip').innerHTML=`
+    <div class="stat-card sc-blue"><div class="stat-lbl">Campaigns</div><div class="stat-val">${campaigns.length}</div><div class="stat-sub">coaching sessions</div></div>
+    <div class="stat-card sc-teal"><div class="stat-lbl">Ambitions</div><div class="stat-val">${ta}</div><div class="stat-sub">across all campaigns</div></div>
+    <div class="stat-card sc-amber"><div class="stat-lbl">Actions</div><div class="stat-val">${tac}</div><div class="stat-sub">${tc} complete · ${tac-tc} remaining</div></div>
+    <div class="stat-card sc-green"><div class="stat-lbl">Overall</div><div class="stat-val">${pct}%</div><div class="stat-sub">actions complete</div></div>`;
+  document.getElementById('c-meta').textContent=campaigns.length+' campaigns · most recent first';
+  document.getElementById('c-grid').innerHTML=campaigns.map((c,idx)=>{
+    const s=stats(c);
+    const role=[c.profile?.role,c.profile?.org].filter(Boolean).join(' · ');
+    const ip=c.intentions.length>0?Math.round(c.intentions.filter(n=>c.actions.some(a=>a.intentionId===n.id)).length/c.intentions.length*100):0;
+    return `<div class="c-card" style="animation-delay:${idx*.05}s">
+      <div class="c-card-head" onclick="openInEditor('${c.id}')">
+        <div class="c-date">${fmtDate(c.importedAt)} · ${c.ambitions.length} ambition${c.ambitions.length!==1?'s':''}</div>
+        <div class="c-name">${esc(lbl(c))}</div>
+        ${role?'<div class="c-role">'+esc(role)+'</div>':''}
       </div>
-      <div class="campaign-card-body">
-        <div class="prog-row">
-          <div class="prog-label">Intentions</div>
-          <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${intPct}%;background:var(--teal);"></div></div>
-          <div class="prog-pct">${intPct}%</div>
-        </div>
-        <div class="prog-row">
-          <div class="prog-label">Actions</div>
-          <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${s.pct}%;background:var(--navy);"></div></div>
-          <div class="prog-pct">${s.pct}%</div>
-        </div>
-        <div class="status-summary">
-          <div class="status-item"><div class="status-dot sd-planned"></div>${s.planned} planned</div>
-          <div class="status-item"><div class="status-dot sd-progress"></div>${s.inprog} in progress</div>
-          <div class="status-item"><div class="status-dot sd-complete"></div>${s.complete} complete</div>
+      <div class="c-body">
+        <div class="prog-row"><div class="prog-lbl">Intentions</div><div class="prog-wrap"><div class="prog-fill" style="width:${ip}%;background:var(--teal);"></div></div><div class="prog-pct">${ip}%</div></div>
+        <div class="prog-row"><div class="prog-lbl">Actions</div><div class="prog-wrap"><div class="prog-fill" style="width:${s.pct}%;background:var(--navy);"></div></div><div class="prog-pct">${s.pct}%</div></div>
+        <div class="s-row">
+          <div class="s-item"><div class="s-dot sd-p"></div>${s.p} planned</div>
+          <div class="s-item"><div class="s-dot sd-i"></div>${s.i} active</div>
+          <div class="s-item"><div class="s-dot sd-c"></div>${s.d} done</div>
         </div>
       </div>
-      <div class="campaign-card-footer" onclick="event.stopPropagation()">
-        <div class="footer-source">${esc(c.filename)}</div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <button class="btn-detail" onclick="openDetail('${c.id}')">View →</button>
-          <button class="btn-remove" onclick="removeCampaign('${c.id}')" title="Remove">✕</button>
+      <div class="c-footer">
+        <div class="c-source">${esc(c.filename)}</div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-open" onclick="openInEditor('${c.id}')">Edit →</button>
+          <button class="btn-icon" onclick="event.stopPropagation();confirmDel('Remove Campaign','Remove \'${esc(lbl(c))}\' from the tracker?',()=>removeCampaign('${c.id}'))">✕</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function renderComparisonTable() {
-  const tbody = document.getElementById('comparison-body');
-  tbody.innerHTML = campaigns.map(c => {
-    const s = getStats(c);
-    const label = campaignLabel(c);
-    const pctColor = s.pct >= 75 ? 'var(--green)' : s.pct >= 40 ? 'var(--amber)' : 'var(--ink-light)';
-    return `
-    <tr>
-      <td><strong style="font-size:.82rem;">${esc(label)}</strong><div style="font-size:.68rem;color:var(--ink-light);margin-top:2px;">${formatDate(c.importedAt)}</div></td>
-      <td>${c.ambitions.length}</td>
-      <td>${c.intentions.length}</td>
-      <td>${s.totalActions}</td>
-      <td><span class="mini-bar-wrap"><span class="mini-bar-fill" style="width:${s.totalActions?Math.round(s.planned/s.totalActions*100):0}%;background:var(--ink-light);"></span></span>${s.planned}</td>
-      <td><span class="mini-bar-wrap"><span class="mini-bar-fill" style="width:${s.totalActions?Math.round(s.inprog/s.totalActions*100):0}%;background:var(--amber);"></span></span>${s.inprog}</td>
-      <td><span class="mini-bar-wrap"><span class="mini-bar-fill" style="width:${s.pct}%;background:var(--green);"></span></span>${s.complete}</td>
-      <td><strong style="color:${pctColor};">${s.pct}%</strong></td>
+function openInEditor(cid) {
+  activeCid=cid;
+  switchTab('editor',document.querySelectorAll('.mast-tab')[1]);
+  renderEditor();
+}
+
+/* ── SIDEBAR ── */
+function renderSidebar() {
+  document.getElementById('sidebar-list').innerHTML=campaigns.map(c=>`
+    <div class="si${c.id===activeCid?' active':''}" onclick="selectC('${c.id}')">
+      <div style="flex:1;">
+        <div class="si-name">${esc(lbl(c))}</div>
+        <div class="si-meta">${fmtDate(c.importedAt)} · ${c.ambitions.length} amb</div>
+      </div>
+      <div class="si-pct">${stats(c).pct}%</div>
+    </div>`).join('');
+}
+
+function selectC(cid) { activeCid=cid; renderSidebar(); renderEditor(); }
+
+function removeCampaign(cid) {
+  campaigns=campaigns.filter(c=>c.id!==cid);
+  if (activeCid===cid) activeCid=campaigns[0]?.id||null;
+  persist(); renderAll(); renderEditor();
+}
+
+/* ── EDITOR ── */
+function renderEditor() {
+  const c = activeCid ? getC(activeCid) : null;
+  const etp = document.getElementById('etp');
+  const body = document.getElementById('editor-body');
+  if (!c) {
+    etp.innerHTML='';
+    body.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--ink-light);font-style:italic;">Select or create a campaign.</div>';
+    return;
+  }
+  const s=stats(c);
+  etp.innerHTML=`<div class="editor-topbar">
+    <div class="etp-name">${esc(lbl(c))}</div>
+    <span style="font-family:var(--font-mono);font-size:.62rem;color:var(--ink-light);align-self:center;" id="etp-stats">${s.d}/${s.t} done · ${s.pct}%</span>
+    <button class="btn btn-primary" onclick="exportUpdated('${c.id}')">↓ Export Updated</button>
+  </div>`;
+
+  let h=`<div class="card" style="margin-bottom:20px;">
+    <div style="padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--rule);">
+      <span style="font-family:var(--font-mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);">Profile</span>
+    </div>
+    <div style="padding:16px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div><label class="fl">Name</label><input class="inp" value="${esc(c.profile.name||'')}" placeholder="Your name" oninput="updProf('${c.id}','name',this.value)"></div>
+      <div><label class="fl">Role</label><input class="inp" value="${esc(c.profile.role||'')}" placeholder="e.g. Director" oninput="updProf('${c.id}','role',this.value)"></div>
+      <div><label class="fl">Organisation</label><input class="inp" value="${esc(c.profile.org||'')}" placeholder="e.g. EMEA Growth" oninput="updProf('${c.id}','org',this.value)"></div>
+    </div>
+  </div>`;
+
+  c.ambitions.forEach((a,ai)=>{
+    const grHtml=(a.guardrails||[]).map((g,gi)=>`
+      <div class="gr-row">
+        <span style="color:var(--amber);font-size:.85rem;flex-shrink:0;">⚡</span>
+        <input class="gr-i" value="${esc(g)}" placeholder="Constraint or boundary…" oninput="updGr('${c.id}','${a.id}',${gi},this.value)">
+        <button class="btn-icon" onclick="rmGr('${c.id}','${a.id}',${gi})">✕</button>
+      </div>`).join('');
+
+    const intents=c.intentions.filter(i=>i.ambitionId===a.id);
+    const intHtml=intents.map((intent,ii)=>{
+      const acts=c.actions.filter(x=>x.intentionId===intent.id);
+      const actHtml=acts.map((act,aci)=>{
+        const st=act.status||'planned';
+        const mkSt=(s,l)=>`<button class="st ${s}${st===s?' on':''}" onclick="updActSt('${c.id}','${act.id}','${s}')">${l}</button>`;
+        return `<div class="act-card" id="ae-${act.id}">
+          <div class="act-hdr">
+            <span class="act-num">Act ${String(aci+1).padStart(2,'0')}</span>
+            <input class="act-title-i" value="${esc(act.title||act.text||'')}" placeholder="Action title…" oninput="updAct('${c.id}','${act.id}','title',this.value)">
+            <div class="st-group">${mkSt('planned','○ Plan')}${mkSt('inprogress','◐ Active')}${mkSt('complete','● Done')}</div>
+            <button class="btn-icon" onclick="confirmDel('Remove Action','Remove this action?',()=>rmAct('${c.id}','${act.id}'))">✕</button>
+          </div>
+          <div class="act-grid">
+            <div><label class="fl">Description</label><textarea class="inp" style="min-height:52px;" placeholder="What will be done…" oninput="updAct('${c.id}','${act.id}','description',this.value)">${esc(act.description||'')}</textarea></div>
+            <div><label class="fl">Expected Outcome</label><textarea class="inp" style="min-height:52px;" placeholder="What success looks like…" oninput="updAct('${c.id}','${act.id}','outcome',this.value)">${esc(act.outcome||'')}</textarea></div>
+            <div><label class="fl">Start Date</label><input class="inp" type="date" value="${esc(act.startDate||'')}" oninput="updAct('${c.id}','${act.id}','startDate',this.value)" style="color-scheme:light;"></div>
+            <div><label class="fl">End Date</label><input class="inp" type="date" value="${esc(act.endDate||'')}" oninput="updAct('${c.id}','${act.id}','endDate',this.value)" style="color-scheme:light;"></div>
+          </div>
+          <label class="fl">Tracker Notes</label>
+          <textarea class="notes-i" placeholder="Progress notes, blockers, observations…" oninput="updAct('${c.id}','${act.id}','trackerNotes',this.value)">${esc(act.trackerNotes||'')}</textarea>
+        </div>`;
+      }).join('');
+      return `<div class="int-card" id="ie-${intent.id}">
+        <div class="int-hdr">
+          <span class="int-num">Int ${String(ii+1).padStart(2,'0')}</span>
+          <textarea class="int-inp" placeholder="Describe this intention…" oninput="updInt('${c.id}','${intent.id}',this.value)">${esc(intent.text||'')}</textarea>
+          <button class="btn-icon" onclick="confirmDel('Remove Intention','Remove this intention and all linked actions?',()=>rmInt('${c.id}','${intent.id}'))">✕</button>
+        </div>
+        <div class="act-sec">
+          <div class="act-lbl-head">Actions</div>
+          ${actHtml}
+          <button class="btn btn-ghost-violet" style="width:100%;justify-content:center;font-size:.7rem;padding:6px;" onclick="addAct('${c.id}','${intent.id}')">+ Add Action</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    h+=`<div class="amb-card">
+      <div class="amb-head">
+        <div class="amb-num">Amb ${String(ai+1).padStart(2,'0')}</div>
+        <div class="amb-fields">
+          <input class="amb-title-i" value="${esc(a.title||'')}" placeholder="Ambition statement…" oninput="updAmb('${c.id}','${a.id}','title',this.value)">
+          <textarea class="amb-ctx-i" placeholder="Context — what's driving this ambition, what does success look like…" oninput="updAmb('${c.id}','${a.id}','context',this.value)">${esc(a.context||a.body||'')}</textarea>
+        </div>
+        <button class="amb-del-btn" onclick="confirmDel('Remove Ambition','Remove this ambition and all linked data?',()=>rmAmb('${c.id}','${a.id}'))">✕</button>
+      </div>
+      <div class="gr-sec">
+        <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:8px;">Guardrails</div>
+        ${grHtml}
+        <button class="btn btn-ghost" style="font-size:.68rem;padding:5px 12px;margin-top:4px;" onclick="addGr('${c.id}','${a.id}')">+ Add Guardrail</button>
+      </div>
+      <div class="int-sec">
+        <div class="int-lbl-head">Intentions</div>
+        ${intHtml}
+        <button class="btn btn-ghost-teal" style="width:100%;justify-content:center;font-size:.7rem;padding:7px;" onclick="addInt('${c.id}','${a.id}')">+ Add Intention</button>
+      </div>
+    </div>`;
+  });
+
+  h+=`<button class="btn btn-ghost" style="width:100%;justify-content:center;padding:12px;font-size:.78rem;margin-top:4px;" onclick="addAmb('${c.id}')">+ Add Ambition</button>`;
+  body.innerHTML=h;
+  body.querySelectorAll('textarea').forEach(ta=>{
+    ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px';
+    ta.addEventListener('input',function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; });
+  });
+}
+
+/* ── MUTATIONS ── */
+function updProf(cid,f,v){ const c=getC(cid);if(!c)return;c.profile[f]=v;persist();renderSidebar();const en=document.getElementById('etp')?.querySelector('.etp-name');if(en)en.textContent=lbl(c); }
+function addAmb(cid){ const c=getC(cid);if(!c)return;c.ambitions.push({id:'a'+Date.now(),title:'',context:'',guardrails:[]});persist();renderEditor();renderSidebar(); }
+function updAmb(cid,aid,f,v){ const c=getC(cid);if(!c)return;const a=c.ambitions.find(x=>x.id===aid);if(a){a[f]=v;persist();} }
+function rmAmb(cid,aid){ const c=getC(cid);if(!c)return;c.ambitions=c.ambitions.filter(a=>a.id!==aid);c.intentions=c.intentions.filter(i=>i.ambitionId!==aid);c.actions=c.actions.filter(a=>a.ambitionId!==aid);persist();renderEditor();renderDashboard();renderCompare(); }
+function addGr(cid,aid){ const c=getC(cid);if(!c)return;const a=c.ambitions.find(x=>x.id===aid);if(!a)return;a.guardrails=a.guardrails||[];a.guardrails.push('');persist();renderEditor();setTimeout(()=>{const el=document.querySelectorAll('.gr-i');if(el.length)el[el.length-1].focus();},50); }
+function updGr(cid,aid,idx,v){ const c=getC(cid);if(!c)return;const a=c.ambitions.find(x=>x.id===aid);if(a)a.guardrails[idx]=v;persist(); }
+function rmGr(cid,aid,idx){ const c=getC(cid);if(!c)return;const a=c.ambitions.find(x=>x.id===aid);if(!a)return;a.guardrails.splice(idx,1);persist();renderEditor(); }
+function addInt(cid,aid){ const c=getC(cid);if(!c)return;c.intentions.push({id:'i'+Date.now(),ambitionId:aid,text:''});persist();renderEditor();setTimeout(()=>{const el=document.querySelectorAll('.int-inp');if(el.length)el[el.length-1].focus();},50); }
+function updInt(cid,iid,v){ const c=getC(cid);if(!c)return;const i=c.intentions.find(x=>x.id===iid);if(i){i.text=v;persist();} }
+function rmInt(cid,iid){ const c=getC(cid);if(!c)return;c.intentions=c.intentions.filter(i=>i.id!==iid);c.actions=c.actions.filter(a=>a.intentionId!==iid);persist();renderEditor();renderDashboard();renderCompare(); }
+function addAct(cid,iid){ const c=getC(cid);if(!c)return;const intent=c.intentions.find(i=>i.id===iid);c.actions.push({id:'ac'+Date.now(),intentionId:iid,ambitionId:intent?intent.ambitionId:'',title:'',description:'',outcome:'',startDate:'',endDate:'',status:'planned',trackerNotes:''});persist();renderEditor();setTimeout(()=>{const el=document.querySelectorAll('.act-title-i');if(el.length)el[el.length-1].focus();},50); }
+function updAct(cid,acid,f,v){ const c=getC(cid);if(!c)return;const a=c.actions.find(x=>x.id===acid);if(a){a[f]=v;persist();} }
+function rmAct(cid,acid){ const c=getC(cid);if(!c)return;c.actions=c.actions.filter(a=>a.id!==acid);persist();renderEditor();renderDashboard();renderCompare(); }
+function updActSt(cid,acid,ns){
+  const c=getC(cid);if(!c)return;
+  const a=c.actions.find(x=>x.id===acid);if(!a)return;
+  a.status=ns;persist();
+  // Update toggles in place
+  const card=document.getElementById('ae-'+acid);
+  if(card){card.querySelectorAll('.st').forEach(b=>{b.classList.remove('on');if(b.classList.contains(ns))b.classList.add('on');});}
+  // Refresh stats display
+  const s=stats(c);
+  const el=document.getElementById('etp-stats');
+  if(el)el.textContent=s.d+'/'+s.t+' done · '+s.pct+'%';
+  renderSidebar();renderDashboard();renderCompare();
+  showToast('✅ '+{planned:'Planned',inprogress:'In Progress',complete:'Complete'}[ns]);
+}
+
+/* ── COMPARE ── */
+function renderCompare(){
+  document.getElementById('comp-body').innerHTML=campaigns.map(c=>{
+    const s=stats(c);
+    const col=s.pct>=75?'var(--green)':s.pct>=40?'var(--amber)':'var(--ink-light)';
+    const bar=(n,t,col)=>`<span class="mini-bar"><span class="mini-fill" style="width:${t?Math.round(n/t*100):0}%;background:${col};"></span></span>${n}`;
+    return `<tr>
+      <td><strong style="font-size:.82rem;">${esc(lbl(c))}</strong><div style="font-size:.66rem;color:var(--ink-light);margin-top:2px;">${fmtDate(c.importedAt)}</div></td>
+      <td>${c.ambitions.length}</td><td>${c.intentions.length}</td><td>${s.t}</td>
+      <td>${bar(s.p,s.t,'var(--ink-light)')}</td>
+      <td>${bar(s.i,s.t,'var(--amber)')}</td>
+      <td>${bar(s.d,s.t,'var(--green)')}</td>
+      <td><strong style="color:${col};">${s.pct}%</strong></td>
     </tr>`;
   }).join('');
 }
 
-function renderTimeline() {
-  const tl = document.getElementById('timeline');
-  const meta = document.getElementById('timeline-meta');
-
-  // Collect all commentary across campaigns, sorted newest first
-  const entries = [];
-  campaigns.forEach(c => {
-    const label = campaignLabel(c);
-    (c.groguCommentary || []).forEach(entry => {
-      entries.push({ ...entry, campaignLabel: label, campaignId: c.id });
-    });
-  });
-
-  entries.sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt));
-  meta.textContent = `${entries.length} entr${entries.length !== 1 ? 'ies' : 'y'} · newest first`;
-
-  if (!entries.length) {
-    tl.innerHTML = `<div style="padding:20px;color:var(--ink-light);font-size:.85rem;font-style:italic;">No Grogu commentary found in imported campaigns.</div>`;
-    return;
-  }
-
-  const stepLabels = { ambition:'Ambitions', intention:'Intentions', action:'Actions' };
-  tl.innerHTML = entries.map((e, idx) => `
-    <div class="timeline-entry" style="animation-delay:${idx*.04}s">
-      <div class="timeline-dot"></div>
-      <div class="timeline-card">
-        <div class="timeline-meta">🐸 Ask Grogu · ${stepLabels[e.step]||e.step} · ${formatDate(e.savedAt)}</div>
-        <div class="timeline-campaign">${esc(e.campaignLabel)}</div>
-        <div class="timeline-text">${esc(e.text)}</div>
-      </div>
-    </div>`).join('');
+/* ── TIMELINE ── */
+function renderTimeline(){
+  const entries=[];
+  campaigns.forEach(c=>(c.groguCommentary||[]).forEach(e=>entries.push({...e,cl:lbl(c)})));
+  entries.sort((a,b)=>new Date(b.savedAt)-new Date(a.savedAt));
+  document.getElementById('tl-meta').textContent=entries.length+' entr'+(entries.length!==1?'ies':'y')+' · newest first';
+  const sl={ambition:'Ambitions',intention:'Intentions',action:'Actions'};
+  document.getElementById('timeline').innerHTML=entries.length
+    ?entries.map((e,i)=>`<div class="tl-entry" style="animation-delay:${i*.04}s"><div class="tl-dot"></div><div class="tl-card"><div class="tl-meta">🐸 Ask Grogu · ${sl[e.step]||e.step} · ${fmtDate(e.savedAt)}</div><div class="tl-campaign">${esc(e.cl)}</div><div class="tl-text">${esc(e.text)}</div></div></div>`).join('')
+    :'<div style="color:var(--ink-light);font-size:.85rem;font-style:italic;padding:20px;">No Grogu commentary found.</div>';
 }
 
-/* ════════════════════════════════════════════
-   DETAIL DRAWER
-════════════════════════════════════════════ */
-function openDetail(id) {
-  const c = campaigns.find(x => x.id === id);
-  if (!c) return;
-
-  const label = campaignLabel(c);
-  const role = [c.profile?.role, c.profile?.org].filter(Boolean).join(' · ');
-  const s = getStats(c);
-  const statusMap = { planned:'Planned', inprogress:'In Progress', complete:'Complete' };
-  const statusClass = { planned:'sb-planned', inprogress:'sb-inprogress', complete:'sb-complete' };
-
-  let ambitionsHtml = '';
-  c.ambitions.forEach((a, ai) => {
-    const intents = c.intentions.filter(i => i.ambitionId === a.id);
-    const grList = (a.guardrails||[]).filter(Boolean);
-
-    const intentRows = intents.map((intent, ii) => {
-      const acts = c.actions.filter(x => x.intentionId === intent.id);
-
-      const actRows = acts.length
-        ? `<table class="action-table" style="margin-top:10px;">
-            <thead><tr><th style="width:30%;">Action</th><th style="width:22%;">Outcome</th><th style="width:10%;">Start</th><th style="width:10%;">End</th><th style="width:18%;">Status</th><th style="width:10%;">Notes</th></tr></thead>
-            <tbody>${acts.map(act => {
-              const st = act.status || 'planned';
-              const mkActive = (s) => st === s ? `active-${s}` : '';
-              return `<tr id="arow-${act.id}">
-                <td><strong style="font-size:.8rem;display:block;margin-bottom:2px;">${esc(act.title||act.text||'—')}</strong>${act.description&&act.description!==act.title?`<div style="font-size:.7rem;color:var(--ink-light);line-height:1.4;">${esc(act.description.substring(0,80))}${act.description.length>80?'…':''}</div>`:''}
-                </td>
-                <td style="font-size:.75rem;">${esc(act.outcome||'—')}</td>
-                <td style="font-family:var(--font-mono);font-size:.65rem;">${esc(act.startDate||'—')}</td>
-                <td style="font-family:var(--font-mono);font-size:.65rem;">${esc(act.endDate||'—')}</td>
-                <td>
-                  <div class="status-toggle-group">
-                    <button class="status-toggle active-planned ${mkActive('planned')}" onclick="setActionStatus('${c.id}','${act.id}','planned',this)" title="Planned">○ Plan</button>
-                    <button class="status-toggle active-inprogress ${mkActive('inprogress')}" onclick="setActionStatus('${c.id}','${act.id}','inprogress',this)" title="In Progress">◐ Active</button>
-                    <button class="status-toggle active-complete ${mkActive('complete')}" onclick="setActionStatus('${c.id}','${act.id}','complete',this)" title="Complete">● Done</button>
-                  </div>
-                </td>
-                <td>
-                  <textarea class="action-notes-input" placeholder="Add a note…" oninput="setActionNotes('${c.id}','${act.id}',this.value)">${esc(act.trackerNotes||'')}</textarea>
-                </td>
-              </tr>`;
-            }).join('')}
-            </tbody>
-          </table>`
-        : `<div style="font-size:.75rem;color:var(--ink-light);font-style:italic;margin-top:8px;">No actions added.</div>`;
-
-      return `<div class="intent-row">
-        <div class="intent-label">Intention ${String(ii+1).padStart(2,'0')}</div>
-        <div class="intent-text">${esc(intent.text||'—')}</div>
-        ${actRows}
-      </div>`;
-    }).join('');
-
-    ambitionsHtml += `
-    <div class="amb-block">
-      <div class="amb-block-head">
-        <div class="amb-block-eyebrow">Ambition ${String(ai+1).padStart(2,'0')}</div>
-        <div class="amb-block-title">${esc(a.title||'Untitled Ambition')}</div>
-        ${a.context ? `<div class="amb-block-context">${esc(a.context)}</div>` : ''}
-        ${a.body    ? `<div class="amb-block-context">${esc(a.body)}</div>` : ''}
-      </div>
-      ${grList.length ? `<div class="guardrail-chips">${grList.map(g=>`<span class="gr-chip">⚡ ${esc(g)}</span>`).join('')}</div>` : ''}
-      ${a.guardrail ? `<div class="guardrail-chips"><span class="gr-chip">⚡ ${esc(a.guardrail)}</span></div>` : ''}
-      <div class="amb-block-body">
-        ${intents.length ? intentRows : '<div style="font-size:.78rem;color:var(--ink-light);font-style:italic;">No intentions added.</div>'}
-      </div>
-    </div>`;
-  });
-
-  // Grogu commentary for this campaign
-  let groguHtml = '';
-  const commentary = c.groguCommentary || [];
-  if (commentary.length) {
-    const stepLabels = { ambition:'Ambitions', intention:'Intentions', action:'Actions' };
-    groguHtml = `<div class="grogu-section">
-      <div class="grogu-section-head">🐸 Grogu Commentary</div>
-      ${commentary.map(entry => `
-        <div class="grogu-entry">
-          <div class="grogu-entry-meta">${stepLabels[entry.step]||entry.step} · ${formatDate(entry.savedAt)}</div>
-          <div class="grogu-entry-text">${esc(entry.text)}</div>
-        </div>`).join('')}
-    </div>`;
-  }
-
-  const drawer = document.getElementById('detail-drawer');
-  drawer.innerHTML = `
-    <div class="drawer-head">
-      <button class="drawer-close" onclick="closeDetail()">✕</button>
-      <div class="drawer-date">${formatDate(c.importedAt)} · ${esc(c.filename)}</div>
-      <div class="drawer-name">${esc(label)}</div>
-      ${role ? `<div class="drawer-role">${esc(role)}</div>` : ''}
-      <div style="display:flex;gap:20px;margin-top:16px;">
-        <div style="text-align:center;">
-          <div style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:white;">${c.ambitions.length}</div>
-          <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px;">Ambitions</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:white;">${c.intentions.length}</div>
-          <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px;">Intentions</div>
-        </div>
-        <div style="text-align:center;">
-          <div data-stat="complete" style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:white;">${s.complete}/${s.totalActions}</div>
-          <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px;">Actions done</div>
-        </div>
-        <div style="text-align:center;">
-          <div data-stat="pct" style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:white;">${s.pct}%</div>
-          <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px;">Complete</div>
-        </div>
-      </div>
-    </div>
-    <div class="drawer-body">
-      ${c.ambitions.length ? ambitionsHtml : '<div style="color:var(--ink-light);font-style:italic;">No ambitions in this campaign.</div>'}
-      ${groguHtml}
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <div>
-          <button class="export-updated-btn" onclick="exportUpdatedBackup('${c.id}')">
-            ↓ Export Updated Backup
-          </button>
-          <div style="font-size:.68rem;color:var(--ink-light);margin-top:5px;">Downloads JSON with your updated statuses &amp; notes — re-import into the coaching app via Restore</div>
-        </div>
-        <button onclick="removeCampaign('${c.id}')" style="padding:8px 18px;background:#FEF2F2;border:1.5px solid #FECACA;border-radius:4px;color:#DC2626;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;flex-shrink:0;">Remove Campaign</button>
-      </div>
-    </div>`;
-
-  document.getElementById('detail-panel').style.display = 'block';
-  document.body.style.overflow = 'hidden';
+/* ── TABS ── */
+function switchTab(name,el){
+  document.querySelectorAll('.mast-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  activeTab=name;
+  if(name==='editor'){renderSidebar();renderEditor();}
+  if(name==='compare')renderCompare();
+  if(name==='timeline')renderTimeline();
 }
 
-/* ════════════════════════════════════════════
-   ACTION EDITING
-════════════════════════════════════════════ */
-function setActionStatus(campaignId, actionId, newStatus, clickedBtn) {
-  const c = campaigns.find(x => x.id === campaignId);
-  if (!c) return;
-  const act = c.actions.find(a => a.id === actionId);
-  if (!act) return;
-
-  act.status = newStatus;
-  persist();
-
-  // Update button visual state without re-rendering the whole drawer
-  const row = document.getElementById('arow-' + actionId);
-  if (row) {
-    const btns = row.querySelectorAll('.status-toggle');
-    btns.forEach(btn => {
-      // Strip all active classes
-      btn.classList.remove('active-planned','active-inprogress','active-complete');
-    });
-    // Re-apply active class to the correct button
-    const activeClass = {
-      planned: 'active-planned',
-      inprogress: 'active-inprogress',
-      complete: 'active-complete'
-    };
-    clickedBtn.classList.add(activeClass[newStatus]);
-  }
-
-  // Update live stats in drawer header
-  refreshDrawerStats(campaignId);
-  // Refresh dashboard cards & comparison table silently
-  renderCampaignCards();
-  renderSummaryStrip();
-  renderComparisonTable();
-
-  const labels = { planned:'Planned', inprogress:'In Progress', complete:'Complete' };
-  showToast(`✅ Marked as ${labels[newStatus]}`);
-}
-
-function setActionNotes(campaignId, actionId, notes) {
-  const c = campaigns.find(x => x.id === campaignId);
-  if (!c) return;
-  const act = c.actions.find(a => a.id === actionId);
-  if (!act) return;
-  act.trackerNotes = notes;
-  persist();
-}
-
-function refreshDrawerStats(campaignId) {
-  const c = campaigns.find(x => x.id === campaignId);
-  if (!c) return;
-  const s = getStats(c);
-  // Update the four stat numbers in the drawer header
-  const statEls = document.querySelectorAll('#detail-drawer .drawer-head [data-stat]');
-  statEls.forEach(el => {
-    const key = el.dataset.stat;
-    if (key === 'complete') el.textContent = `${s.complete}/${s.totalActions}`;
-    if (key === 'pct') el.textContent = `${s.pct}%`;
+/* ── DRAG & DROP ── */
+function setupDnd(){
+  const dz=document.getElementById('drop-zone');
+  ['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(dz)dz.classList.add('drag-over');}));
+  ['dragleave','drop'].forEach(ev=>document.addEventListener(ev,()=>{if(dz)dz.classList.remove('drag-over');}));
+  document.addEventListener('drop',e=>{
+    e.preventDefault();
+    const files=Array.from(e.dataTransfer?.files||[]).filter(f=>f.name.endsWith('.json'));
+    if(files.length)importFiles({target:{files,value:''}});
+    else showToast('Drop JSON backup files to import.');
   });
 }
 
-function exportUpdatedBackup(campaignId) {
-  const c = campaigns.find(x => x.id === campaignId);
-  if (!c) return;
-
-  // Build export object matching the coaching app format
-  const exportData = {
-    profile: c.profile,
-    ambitions: c.ambitions,
-    intentions: c.intentions,
-    actions: c.actions,  // includes updated statuses and trackerNotes
-    groguCommentary: c.groguCommentary
-  };
-
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  const label = campaignLabel(c).replace(/[^a-z0-9]/gi, '-').toLowerCase();
-  a.download = `ambition-updated-${label}-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  showToast('↓ Updated backup downloaded — re-import into your coaching app via Restore.');
-}
-
-function closeDetail() {
-  document.getElementById('detail-panel').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-/* ════════════════════════════════════════════
-   TOAST
-════════════════════════════════════════════ */
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
+/* ── TOAST ── */
+function showToast(msg){
+  const t=document.createElement('div');
+  t.className='toast-el'; t.textContent=msg;
   document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(), 300); }, 3000);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},3000);
 }
 
-/* ════════════════════════════════════════════
-   BOOT
-════════════════════════════════════════════ */
-init();
+boot();
 </script>
 </body>
 </html>
