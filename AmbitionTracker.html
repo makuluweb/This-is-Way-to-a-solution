@@ -678,6 +678,102 @@ body::before{
 .sb-inprogress{ background:#FFFBEB; color:#D97706; }
 .sb-complete{ background:#F0FDF4; color:#16A34A; }
 
+/* ─── STATUS TOGGLES (interactive) ─── */
+.status-toggle-group{
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.status-toggle{
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1.5px solid transparent;
+  font-size: .62rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all .15s;
+  white-space: nowrap;
+  background: var(--surface);
+  color: var(--ink-light);
+  border-color: var(--rule);
+}
+
+.status-toggle:hover{ opacity: .8; }
+
+.status-toggle.active-planned{
+  background: #EFF6FF;
+  color: #3B82F6;
+  border-color: #BFDBFE;
+}
+
+.status-toggle.active-inprogress{
+  background: #FFFBEB;
+  color: #D97706;
+  border-color: #FDE68A;
+}
+
+.status-toggle.active-complete{
+  background: #F0FDF4;
+  color: #16A34A;
+  border-color: #BBF7D0;
+}
+
+/* ─── ACTION NOTES ─── */
+.action-notes-input{
+  width: 100%;
+  padding: 5px 8px;
+  border: 1.5px solid var(--rule);
+  border-radius: 3px;
+  font-family: var(--font-body);
+  font-size: .72rem;
+  color: var(--ink-mid);
+  background: var(--white);
+  resize: none;
+  min-height: 44px;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color .15s;
+}
+
+.action-notes-input::placeholder{ color: var(--ink-light); opacity: .6; }
+.action-notes-input:focus{ border-color: var(--blue); }
+
+/* ─── CHANGED INDICATOR ─── */
+.changed-dot{
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  margin-left: 6px;
+  vertical-align: middle;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot{
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:.5; transform:scale(.8); }
+}
+
+/* ─── EXPORT BUTTON IN DRAWER ─── */
+.export-updated-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--navy);
+  border: none;
+  border-radius: 4px;
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.export-updated-btn:hover{ background: var(--navy-mid); }
+
 /* ─── GROGU COMMENTARY IN DRAWER ─── */
 .grogu-section{
   margin-top: 28px;
@@ -1306,17 +1402,31 @@ function openDetail(id) {
 
     const intentRows = intents.map((intent, ii) => {
       const acts = c.actions.filter(x => x.intentionId === intent.id);
+
       const actRows = acts.length
         ? `<table class="action-table" style="margin-top:10px;">
-            <thead><tr><th>Action</th><th>Outcome</th><th>Start</th><th>End</th><th>Status</th></tr></thead>
-            <tbody>${acts.map(act => `
-              <tr>
-                <td>${esc(act.title||act.text||'—')}</td>
-                <td>${esc(act.outcome||'—')}</td>
-                <td style="font-family:var(--font-mono);font-size:.68rem;">${esc(act.startDate||'—')}</td>
-                <td style="font-family:var(--font-mono);font-size:.68rem;">${esc(act.endDate||'—')}</td>
-                <td><span class="status-badge ${statusClass[act.status]||'sb-planned'}">${statusMap[act.status]||act.status||'Planned'}</span></td>
-              </tr>`).join('')}
+            <thead><tr><th style="width:30%;">Action</th><th style="width:22%;">Outcome</th><th style="width:10%;">Start</th><th style="width:10%;">End</th><th style="width:18%;">Status</th><th style="width:10%;">Notes</th></tr></thead>
+            <tbody>${acts.map(act => {
+              const st = act.status || 'planned';
+              const mkActive = (s) => st === s ? `active-${s}` : '';
+              return `<tr id="arow-${act.id}">
+                <td><strong style="font-size:.8rem;display:block;margin-bottom:2px;">${esc(act.title||act.text||'—')}</strong>${act.description&&act.description!==act.title?`<div style="font-size:.7rem;color:var(--ink-light);line-height:1.4;">${esc(act.description.substring(0,80))}${act.description.length>80?'…':''}</div>`:''}
+                </td>
+                <td style="font-size:.75rem;">${esc(act.outcome||'—')}</td>
+                <td style="font-family:var(--font-mono);font-size:.65rem;">${esc(act.startDate||'—')}</td>
+                <td style="font-family:var(--font-mono);font-size:.65rem;">${esc(act.endDate||'—')}</td>
+                <td>
+                  <div class="status-toggle-group">
+                    <button class="status-toggle active-planned ${mkActive('planned')}" onclick="setActionStatus('${c.id}','${act.id}','planned',this)" title="Planned">○ Plan</button>
+                    <button class="status-toggle active-inprogress ${mkActive('inprogress')}" onclick="setActionStatus('${c.id}','${act.id}','inprogress',this)" title="In Progress">◐ Active</button>
+                    <button class="status-toggle active-complete ${mkActive('complete')}" onclick="setActionStatus('${c.id}','${act.id}','complete',this)" title="Complete">● Done</button>
+                  </div>
+                </td>
+                <td>
+                  <textarea class="action-notes-input" placeholder="Add a note…" oninput="setActionNotes('${c.id}','${act.id}',this.value)">${esc(act.trackerNotes||'')}</textarea>
+                </td>
+              </tr>`;
+            }).join('')}
             </tbody>
           </table>`
         : `<div style="font-size:.75rem;color:var(--ink-light);font-style:italic;margin-top:8px;">No actions added.</div>`;
@@ -1376,11 +1486,11 @@ function openDetail(id) {
           <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px;">Intentions</div>
         </div>
         <div style="text-align:center;">
-          <div style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:white;">${s.complete}/${s.totalActions}</div>
+          <div data-stat="complete" style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:white;">${s.complete}/${s.totalActions}</div>
           <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px;">Actions done</div>
         </div>
         <div style="text-align:center;">
-          <div style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:white;">${s.pct}%</div>
+          <div data-stat="pct" style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:white;">${s.pct}%</div>
           <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px;">Complete</div>
         </div>
       </div>
@@ -1388,13 +1498,103 @@ function openDetail(id) {
     <div class="drawer-body">
       ${c.ambitions.length ? ambitionsHtml : '<div style="color:var(--ink-light);font-style:italic;">No ambitions in this campaign.</div>'}
       ${groguHtml}
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--rule);display:flex;justify-content:flex-end;">
-        <button onclick="removeCampaign('${c.id}')" style="padding:8px 18px;background:#FEF2F2;border:1.5px solid #FECACA;border-radius:4px;color:#DC2626;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;">Remove Campaign</button>
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div>
+          <button class="export-updated-btn" onclick="exportUpdatedBackup('${c.id}')">
+            ↓ Export Updated Backup
+          </button>
+          <div style="font-size:.68rem;color:var(--ink-light);margin-top:5px;">Downloads JSON with your updated statuses &amp; notes — re-import into the coaching app via Restore</div>
+        </div>
+        <button onclick="removeCampaign('${c.id}')" style="padding:8px 18px;background:#FEF2F2;border:1.5px solid #FECACA;border-radius:4px;color:#DC2626;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;flex-shrink:0;">Remove Campaign</button>
       </div>
     </div>`;
 
   document.getElementById('detail-panel').style.display = 'block';
   document.body.style.overflow = 'hidden';
+}
+
+/* ════════════════════════════════════════════
+   ACTION EDITING
+════════════════════════════════════════════ */
+function setActionStatus(campaignId, actionId, newStatus, clickedBtn) {
+  const c = campaigns.find(x => x.id === campaignId);
+  if (!c) return;
+  const act = c.actions.find(a => a.id === actionId);
+  if (!act) return;
+
+  act.status = newStatus;
+  persist();
+
+  // Update button visual state without re-rendering the whole drawer
+  const row = document.getElementById('arow-' + actionId);
+  if (row) {
+    const btns = row.querySelectorAll('.status-toggle');
+    btns.forEach(btn => {
+      // Strip all active classes
+      btn.classList.remove('active-planned','active-inprogress','active-complete');
+    });
+    // Re-apply active class to the correct button
+    const activeClass = {
+      planned: 'active-planned',
+      inprogress: 'active-inprogress',
+      complete: 'active-complete'
+    };
+    clickedBtn.classList.add(activeClass[newStatus]);
+  }
+
+  // Update live stats in drawer header
+  refreshDrawerStats(campaignId);
+  // Refresh dashboard cards & comparison table silently
+  renderCampaignCards();
+  renderSummaryStrip();
+  renderComparisonTable();
+
+  const labels = { planned:'Planned', inprogress:'In Progress', complete:'Complete' };
+  showToast(`✅ Marked as ${labels[newStatus]}`);
+}
+
+function setActionNotes(campaignId, actionId, notes) {
+  const c = campaigns.find(x => x.id === campaignId);
+  if (!c) return;
+  const act = c.actions.find(a => a.id === actionId);
+  if (!act) return;
+  act.trackerNotes = notes;
+  persist();
+}
+
+function refreshDrawerStats(campaignId) {
+  const c = campaigns.find(x => x.id === campaignId);
+  if (!c) return;
+  const s = getStats(c);
+  // Update the four stat numbers in the drawer header
+  const statEls = document.querySelectorAll('#detail-drawer .drawer-head [data-stat]');
+  statEls.forEach(el => {
+    const key = el.dataset.stat;
+    if (key === 'complete') el.textContent = `${s.complete}/${s.totalActions}`;
+    if (key === 'pct') el.textContent = `${s.pct}%`;
+  });
+}
+
+function exportUpdatedBackup(campaignId) {
+  const c = campaigns.find(x => x.id === campaignId);
+  if (!c) return;
+
+  // Build export object matching the coaching app format
+  const exportData = {
+    profile: c.profile,
+    ambitions: c.ambitions,
+    intentions: c.intentions,
+    actions: c.actions,  // includes updated statuses and trackerNotes
+    groguCommentary: c.groguCommentary
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const label = campaignLabel(c).replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  a.download = `ambition-updated-${label}-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast('↓ Updated backup downloaded — re-import into your coaching app via Restore.');
 }
 
 function closeDetail() {
